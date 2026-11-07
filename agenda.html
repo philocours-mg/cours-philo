@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agenda & Devoirs — Cours de Philosophie</title>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',sans-serif}
+        :root{--bleu:#1565C0;--vert:#2E7D32;--orange:#E65100;--rouge:#D32F2F;--gris:#666;--fond:#FAFAFA;--texte:#333;--bordure:#E0E0E0}
+        body{background:var(--fond);color:var(--texte);line-height:1.6}
+        header{background:linear-gradient(135deg,#0D47A1,#1565C0);color:white;padding:1.5rem 1rem}
+        .header-top{max-width:1000px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem}
+        .retour{color:white;text-decoration:none;opacity:.9}
+        .retour:hover{text-decoration:underline}
+        .container{max-width:1000px;margin:0 auto;padding:2rem 1rem}
+        h2{color:var(--bleu);margin-bottom:1.2rem;border-bottom:2px solid var(--bleu);padding-bottom:.5rem}
+        .onglets{display:flex;gap:.5rem;margin-bottom:2rem;flex-wrap:wrap}
+        .onglet{padding:.8rem 1.5rem;border:none;border-radius:8px 8px 0 0;cursor:pointer;font-weight:bold;background:#eee;color:var(--gris)}
+        .onglet.actif{background:white;color:var(--bleu);box-shadow:0 -2px 5px rgba(0,0,0,.05)}
+        .vue{display:none}
+        .vue.visible{display:block}
+        .devoir{background:white;border-radius:10px;padding:1.5rem;margin-bottom:1.2rem;box-shadow:0 2px 8px rgba(0,0,0,.06);border-left:5px solid var(--bleu)}
+        .devoir.en-cours{border-left-color:var(--vert)}
+        .devoir.en-retard{border-left-color:var(--rouge)}
+        .devoir.a-venir{border-left-color:var(--orange)}
+        .devoir-entete{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:.5rem;margin-bottom:.8rem}
+        .devoir-titre{font-weight:bold;font-size:1.1rem}
+        .statut{padding:.3rem .8rem;border-radius:20px;font-size:.85rem;font-weight:bold}
+        .statut.attente{background:#E3F2FD;color:var(--bleu)}
+        .statut.rendu{background:#E8F5E9;color:var(--vert)}
+        .statut.en-retard{background:#FFEBEE;color:var(--rouge)}
+        .statut.a-venir{background:#FFF3E0;color:var(--orange)}
+        .devoir-contenu{margin:1rem 0}
+        .date-limite{font-size:.9rem;color:var(--gris);margin-top:.5rem}
+        .temps-restant{font-weight:bold;margin-top:.3rem}
+        .temps-restant.vert{color:var(--vert)}
+        .temps-restant.orange{color:var(--orange)}
+        .temps-restant.rouge{color:var(--rouge)}
+        .bouton{display:inline-block;padding:.8rem 2rem;border-radius:6px;text-decoration:none;font-weight:bold;transition:.3s;border:none;cursor:pointer;margin-top:.8rem}
+        .bouton.prim{background:var(--bleu);color:white}
+        .bouton.prim:hover{background:#0D47A1}
+        .bouton.vert{background:var(--vert);color:white}
+        .bouton.vert:hover{background:#276F29}
+        .alerte{background:#FFF3E0;border-left:4px solid var(--orange);padding:1rem 1.5rem;border-radius:0 8px 8px 0;margin:1.5rem 0}
+        .alerte.rouge{background:#FFEBEE;border-color:var(--rouge)}
+        .form-groupe{margin-bottom:1.2rem}
+        label{display:block;font-weight:600;margin-bottom:.4rem}
+        input, textarea, select{width:100%;padding:.9rem;border:1px solid var(--bordure);border-radius:8px;font-size:1rem}
+        input:focus, textarea:focus{outline:none;border-color:var(--bleu);box-shadow:0 0 0 3px rgba(21,101,192,.15)}
+        .succes{background:#E8F5E9;border-left:4px solid var(--vert);padding:1rem 1.5rem;border-radius:0 8px 8px 0;margin-top:1.5rem;display:none}
+        footer{background:#222;color:#aaa;text-align:center;padding:2rem 1rem;margin-top:3rem;font-size:.9rem}
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="header-top">
+        <div>
+            <h1>📅 Agenda & Devoirs</h1>
+            <a href="espace-eleve.html" class="retour">← Retour à mon espace</a>
+        </div>
+    </div>
+</header>
+
+<div class="container" id="contenu">
+    <p id="msgChargement">Chargement...</p>
+</div>
+
+<footer>
+    <p>© 2026 — Cours de Philosophie. Mananjary — Madagascar</p>
+    <p>📧 rnj2618@gmail.com | 📱 +261 38 552 8349</p>
+</footer>
+
+<script>
+// Vérification connexion
+const eleve = JSON.parse(sessionStorage.getItem('eleveConnecte'));
+const conteneur = document.getElementById('contenu');
+
+if (!eleve) {
+    conteneur.innerHTML = '<div style="text-align:center;padding:4rem"><h2>🔒 Accès réservé</h2><p>Connectez-vous d\'abord.</p><a href="connexion.html" style="display:inline-block;margin-top:1rem;padding:.8rem 2rem;background:#1565C0;color:white;border-radius:6px;text-decoration:none">Se connecter</a></div>';
+} else {
+    // Base des devoirs
+    let listeDevoirs = JSON.parse(localStorage.getItem('devoirs') || JSON.stringify([
+        {
+            id: 1,
+            titre: "La Vérité — Dissertation",
+            consigne: "Sujet : « Est-ce que la vérité existe ? »\nVous développerez une argumentation structurée en 3 parties. Vous vous appuierez sur les auteurs étudiés dans la fiche de cours.",
+            datePublication: "2026-09-08",
+            dateLimite: "2026-09-11",
+            concerne: "tous",
+            statut: "en-cours"
+        },
+        {
+            id: 2,
+            titre: "La Liberté — Question de texte",
+            consigne: "Commentaire du texte de Sartre : « L'existence précède l'essence ». Montrez en quoi cette affirmation signifie que l'homme est libre.",
+            datePublication: "2026-09-15",
+            dateLimite: "2026-09-18",
+            concerne: "tous",
+            statut: "a-venir"
+        },
+        {
+            id: 3,
+            titre: "Le Devoir — Exercice",
+            consigne: "Définissez le devoir selon Kant et expliquez pourquoi il est « pur ».",
+            datePublication: "2026-09-01",
+            dateLimite: "2026-09-04",
+            concerne: "tous",
+            statut: "corrige"
+        }
+    ]));
+
+    // Récupération des rendus de l'élève
+    let rendusEleve = JSON.parse(localStorage.getItem('rendus_' + eleve.login) || '[]');
+
+    // Calcul du temps restant
+    function calculerTemps(dateLimiteStr) {
+        const maintenant = new Date();
+        const limite = new Date(dateLimiteStr.split('/').reverse().join('-'));
+        const diff = limite - maintenant;
+        if (diff < 0) return { valeur: -1, texte: "En retard !", classe: "rouge" };
+        const jours = Math.floor(diff / (1000 * 60 * 60 * 24));
+        const heures = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        let texte = "";
+        if (jours > 0) texte += jours + " jour" + (jours > 1 ? "s" : "");
+        if (heures > 0) texte += " " + heures + " heure" + (heures > 1 ? "s" : "");
+        return { 
+            valeur: diff, 
+            texte: texte || "Moins d'une heure", 
+            classe: jours <= 1 ? "orange" : "vert" 
+        };
+    }
+
+    // Rendu HTML d'un devoir
+    function creerCarteDevoir(dev) {
+        const rendu = rendusEleve.find(r => r.idDevoir === dev.id);
+        const temps = calculerTemps(dev.dateLimite);
+        const estEnRetard = temps.valeur < 0 && !rendu;
+        
+        let statutClasse = "", statutTexte = "";
+        if (rendu) {
+            statutClasse = "rendu";
+            statutTexte = "✅ Rendu le " + rendu.dateRendu;
+        } else if (estEnRetard) {
+            statutClasse = "en-retard";
+            statutTexte = "❌ En retard";
+        } else if (dev.statut === "a-venir") {
+            statutClasse = "a-venir";
+            statutTexte = "⏳ À venir";
+        } else {
+            statutClasse = "attente";
+            statutTexte = "⏰ En cours";
+        }
+
+        // Mise à jour avertissement si retard non rendu
+        if (estEnRetard && dev.statut === "en-cours") {
+            const index = listeDevoirs.findIndex(d => d.id === dev.id);
+            if (index !== -1 && listeDevoirs[index].statut === "en-cours") {
+                listeDevoirs[index].statut = "non-rendu";
+                eleve.avertissements = (eleve.avertissements || 0) + 1;
+                localStorage.setItem('eleveConnecte', JSON.stringify(eleve));
+                let liste = JSON.parse(localStorage.getItem('listeEleves') || '[]');
+                const pos = liste.findIndex(e => e.login === eleve.login);
+                if (pos !== -1) {
+                    liste[pos].avertissements = eleve.avertissements;
+                    // Exclusion définitive à 3
+                    if (liste[pos].avertissements >= 3) {
+                        liste[pos].statut = "exclu";
+                    }
+                    localStorage.setItem('listeEleves', JSON.stringify(liste));
+                }
+            }
+        }
+
+        const dateLimite = new Date(dev.dateLimite.split('/').reverse().join('-'));
+        const datePub = new Date(dev.datePublication.split('/').reverse().join('-'));
+        const aujourdhui = new Date();
+        const estDisponible = aujourdhui >= datePub;
+
+        return `
+            <div class="devoir ${statutClasse === 'en-retard' ? 'en-retard' : ''} ${dev.statut === 'a-venir' ? 'a-venir' : ''}">
+                <div class="devoir-entete">
+                    <span class="devoir-titre">${dev.titre}</span>
+                    <span class="statut ${statutClasse}">${statutTexte}</span>
+                </div>
+                <div class="devoir-contenu">
+                    <p style="white-space:pre-line">${estDisponible ? dev.consigne : "🔒 Disponible à partir du " + datePub.toLocaleDateString('fr-FR')}</p>
+                </div>
+                <p class="date-limite">📅 Date limite : ${dateLimite.toLocaleDateString('fr-FR')}</p>
+                ${estDisponible && !rendu && dev.statut !== 'corrige' ? `
+                    <p class="temps-restant ${temps.classe}">${temps.valeur >= 0 ? "⏱️ Temps restant : " + temps.texte : "⚠️ Délai dépassé"}</p>
+                    ${temps.valeur >= 0 ? `
+                        <button class="bouton vert" onclick="ouvrirFormulaire(${dev.id}, '${dev.titre.replace(/'/g, "\\'")}')">✍️ Déposer mon travail</button>
+                    ` : ''}
+                ` : ''}
+                ${rendu ? `<p style="color:var(--vert);margin-top:.5rem">📎 Fichier / texte envoyé : <strong>${rendu.nomFichier || rendu.texteDepose.substring(0,40)}...</strong></p>` : ''}
+                ${dev.statut === 'corrige' ? `<p style="color:var(--vert);margin-top:.5rem">✅ Corrigé — Note : <strong>${dev.note || "En attente"}</strong></p>` : ''}
+            </div>
+        `;
+    }
+
+    // Formulaire de dépôt
+    window.ouvrirFormulaire = function(idDevoir, titreDevoir) {
+        conteneur.innerHTML = `
+            <a href="agenda.html" style="display:inline-block;margin-bottom:1rem;color:var(--bleu);text-decoration:none">← Retour à l'agenda</a>
+            <h2>✍️ Déposer : ${titreDevoir}</h2>
+            <form id="formDepot">
+                <div class="form-groupe">
+                    <label>Nom du fichier ou titre de votre travail</label>
+                    <input type="text" id="nomFichier" placeholder="Exemple : RAKOTO_Marie_La_Verite.pdf" required>
+                </div>
+                <div class="form-groupe">
+                    <label>Ou collez votre texte directement</label>
+                    <textarea id="texteTravail" rows="10" placeholder="Copiez votre dissertation ou votre réponse ici..."></textarea>
+                </div>
+                <button type="submit" class="bouton vert">✅ Envoyer mon travail</button>
+            </form>
+            <div class="succes" id="msgSucces">
+                <strong>🎉 Travail envoyé !</strong><br>
+                Votre devoir a bien été enregistré. Vous recevrez la correction dans les meilleurs délais.<br>
+                <a href="agenda.html" style="color:inherit;font-weight:bold">Retour à l'agenda →</a>
+            </div>
+        `;
+
+        document.getElementById('formDepot').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const nouveauRendu = {
+                idDevoir: idDevoir,
+                nomFichier: document.getElementById('nomFichier').value,
+                texteDepose: document.getElementById('texteTravail').value || "(Fichier joint)",
+                dateRendu: new Date().toLocaleDateString('fr-FR')
+            };
+            rendusEleve.push(nouveauRendu);
+            localStorage.setItem('rendus_' + eleve.login, JSON.stringify(rendusEleve));
+            
+            // Mise à jour du statut du devoir
+            const idx = listeDevoirs.findIndex(d => d.id === idDevoir);
+            if (idx !== -1) listeDevoirs[idx].statut = "rendu";
+            localStorage.setItem('devoirs', JSON.stringify(listeDevoirs));
+
+            document.getElementById('formDepot').style.display = 'none';
+            document.getElementById('msgSucces').style.display = 'block';
+        });
+    };
+
+    // Affichage principal
+    function afficherAgenda() {
+        const aujourdhui = new Date();
+        
+        conteneur.innerHTML = `
+            ${eleve.avertissements >= 2 ? `
+                <div class="alerte ${eleve.avertissements >= 3 ? 'rouge' : ''}">
+                    <strong>${eleve.avertissements >= 3 ? '❌ EXCLUSION DÉFINITIVE' : '⚠️ Attention !'}</strong><br>
+                    ${eleve.avertissements >= 3 
+                        ? 'Vous avez 3 avertissements. Votre accès est désactivé sans remboursement possible.' 
+                        : `Vous avez ${eleve.avertissements}/3 avertissements. Un prochain devoir non rendu = exclusion sans remboursement.`}
+                </div>
+            ` : ''}
+
+            <div class="onglets">
+                <button class="onglet actif" data-vue="tous">📋 Tous</button>
+                <button class="onglet" data-vue="en-cours">⏰ En cours</button>
+                <button class="onglet" data-vue="corriges">✅ Corrigés</button>
+            </div>
+
+            <div class="vue visible" id="vue-tous">
+                ${listeDevoirs.map(d => creerCarteDevoir(d)).join('')}
+            </div>
+            <div class="vue" id="vue-en-cours">
+                ${listeDevoirs.filter(d => d.statut === 'en-cours').map(d => creerCarteDevoir(d)).join('') || '<p style="text-align:center;color:var(--gris);padding:2rem">Aucun devoir en cours ✅</p>'}
+            </div>
+            <div class="vue" id="vue-corriges">
+                ${listeDevoirs.filter(d => d.statut === 'corrige' || d.statut === 'rendu').map(d => creerCarteDevoir(d)).join('') || '<p style="text-align:center;color:var(--gris);padding:2rem">Pas encore de devoir corrigé</p>'}
+            </div>
+        `;
+
+        // Gestion des onglets
+        document.querySelectorAll('.onglet').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.onglet').forEach(b

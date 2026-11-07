@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mon Espace — Cours de Philosophie</title>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',sans-serif}
+        :root{--bleu:#1565C0;--vert:#2E7D32;--orange:#E65100;--rouge:#D32F2F;--gris:#666;--fond:#FAFAFA;--texte:#333;--bordure:#E0E0E0}
+        body{background:var(--fond);color:var(--texte);line-height:1.6}
+        header{background:linear-gradient(135deg,#0D47A1,#1565C0);color:white;padding:1.5rem 1rem}
+        .header-top{max-width:1000px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem}
+        .deconnexion{background:rgba(255,255,255,.2);color:white;border:none;padding:.6rem 1.2rem;border-radius:6px;cursor:pointer;font-weight:bold;transition:.2s}
+        .deconnexion:hover{background:rgba(255,255,255,.3)}
+        .container{max-width:1000px;margin:0 auto;padding:2rem 1rem}
+        .carte-profil{background:white;border-radius:12px;box-shadow:0 3px 10px rgba(0,0,0,.08);padding:2rem;margin-bottom:2rem}
+        .nom-eleve{font-size:1.6rem;color:var(--bleu);margin-bottom:.5rem}
+        .statut{display:inline-block;padding:.4rem 1rem;border-radius:20px;font-weight:bold;font-size:.9rem;margin-left:.5rem}
+        .statut.actif{background:#E8F5E9;color:var(--vert)}
+        .info-ligne{margin:.5rem 0;color:var(--gris)}
+        .alerte-fin{background:#FFF3E0;border-left:4px solid var(--orange);padding:1rem 1.5rem;border-radius:0 8px 8px 0;margin:1.5rem 0;display:none}
+        .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1.5rem;margin:2rem 0}
+        .tuile{background:white;border-radius:10px;box-shadow:0 3px 10px rgba(0,0,0,.08);padding:1.8rem;text-decoration:none;color:inherit;transition:.3s}
+        .tuile:hover{transform:translateY(-3px);box-shadow:0 6px 15px rgba(0,0,0,.12)}
+        .tuile.icone{font-size:2rem;margin-bottom:.8rem}
+        .tuile h3{color:var(--bleu);margin-bottom:.5rem}
+        .tuile p{color:var(--gris);font-size:.95rem}
+        .section{margin:3rem 0}
+        h2{color:var(--bleu);margin-bottom:1.2rem;border-bottom:2px solid var(--bleu);padding-bottom:.5rem}
+        .liste-item{background:white;padding:1.2rem;border-radius:8px;margin-bottom:.8rem;border-left:4px solid var(--bleu)}
+        .liste-item.ferme{opacity:.6;border-left-color:var(--bordure)}
+        .liste-item.alerte{border-left-color:var(--orange)}
+        .badge{display:inline-block;padding:.2rem .6rem;border-radius:4px;font-size:.8rem;font-weight:bold;margin-left:.5rem}
+        .badge.vert{background:#E8F5E9;color:var(--vert)}
+        .badge.orange{background:#FFF3E0;color:var(--orange)}
+        .badge.rouge{background:#FFEBEE;color:var(--rouge)}
+        footer{background:#222;color:#aaa;text-align:center;padding:2rem 1rem;margin-top:3rem;font-size:.9rem}
+        .cache{display:none !important}
+        @media(max-width:600px){.grid{grid-template-columns:1fr}}
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="header-top">
+        <div>
+            <h1>📚 Mon Espace</h1>
+            <p style="opacity:.85">Cours de Philosophie — Mananjary</p>
+        </div>
+        <button class="deconnexion" id="btnDeconnexion">🚪 Se déconnecter</button>
+    </div>
+</header>
+
+<div class="container" id="pageEspace">
+    <!-- Chargement -->
+    <p id="msgChargement">Chargement de votre profil...</p>
+</div>
+
+<footer>
+    <p>© 2026 — Cours de Philosophie. Tous droits réservés.</p>
+    <p>📧 rnj2618@gmail.com | 📱 +261 38 552 8349</p>
+</footer>
+
+<script>
+// Récupération de l'élève connecté
+const eleve = JSON.parse(sessionStorage.getItem('eleveConnecte'));
+const conteneur = document.getElementById('pageEspace');
+
+if (!eleve) {
+    conteneur.innerHTML = '<div style="text-align:center;padding:3rem"><h3>🔒 Accès réservé</h3><p>Vous devez vous connecter d\'abord.</p><a href="connexion.html" style="display:inline-block;margin-top:1rem;padding:.8rem 2rem;background:#1565C0;color:white;border-radius:6px;text-decoration:none">Se connecter</a></div>';
+} else {
+    // Calcul du nombre de jours restants
+    const aujourdhui = new Date();
+    const dateFin = new Date(eleve.finValidite.split('/').reverse().join('-'));
+    const joursRestants = Math.ceil((dateFin - aujourdhui) / (1000 * 60 * 60 * 24));
+    
+    // Affichage complet
+    conteneur.innerHTML = `
+        <div class="carte-profil">
+            <h2 class="nom-eleve">${eleve.prenom} ${eleve.nom} <span class="statut actif">✅ Actif</span></h2>
+            <p class="info-ligne"><strong>Login :</strong> ${eleve.login}</p>
+            <p class="info-ligne"><strong>Classe :</strong> ${eleve.classe === 'premiere' ? '📘 Première' : '📙 Terminale'}</p>
+            <p class="info-ligne"><strong>Compte valide jusqu'au :</strong> ${eleve.finValidite}</p>
+            <p class="info-ligne"><strong>Jours restants :</strong> ${joursRestants > 0 ? joursRestants + ' jours' : 'Échu'}</p>
+            <p class="info-ligne"><strong>Avertissements :</strong> ${eleve.avertissements}/3</p>
+            
+            ${joursRestants <= 30 ? `
+                <div class="alerte-fin" style="display:block">
+                    <strong>⚠️ Votre compte arrive bientôt à échéance !</strong><br>
+                    Il sera supprimé le ${eleve.finValidite}.
+                    <a href="renouvellement.html" style="color:inherit;font-weight:bold"> Renouveler mon accès →</a>
+                </div>
+            ` : ''}
+            
+            ${eleve.avertissements >= 2 ? `
+                <div class="alerte-fin" style="display:block;background:#FFEBEE;border-color:var(--rouge)">
+                    <strong>⚠️ Attention !</strong><br>
+                    Vous avez ${eleve.avertissements}/3 avertissements. Un prochain devoir non rendu entraînera votre exclusion définitive sans remboursement.
+                </div>
+            ` : ''}
+        </div>
+
+        <div class="grid">
+            <a href="bibliotheque.html" class="tuile">
+                <div class="icone">📚</div>
+                <h3>Bibliothèque</h3>
+                <p>Accéder aux fiches de cours, méthodes et documents de référence.</p>
+            </a>
+            <a href="agenda.html" class="tuile">
+                <div class="icone">📅</div>
+                <h3>Agenda & Devoirs</h3>
+                <p>Voir les échéances et déposer vos travaux dans les 3 jours.</p>
+            </a>
+            <a href="depot-devoir.html" class="tuile">
+                <div class="icone">✍️</div>
+                <h3>Déposer un devoir</h3>
+                <p>Envoyer votre travail avant la date limite.</p>
+            </a>
+            <a href="renouvellement.html" class="tuile">
+                <div class="icone">🔄</div>
+                <h3>Renouvellement</h3>
+                <p>Prolonger votre accès ou vérifier votre situation.</p>
+            </a>
+        </div>
+
+        <div class="section">
+            <h2>📋 Mes prochaines échéances</h2>
+            <div class="liste-item">
+                <strong>La Vérité — Devoir à rendre</strong>
+                <span class="badge vert">À rendre pour le 11/09</span>
+                <p style="margin-top:.5rem;color:var(--gris)">Consulter la fiche dans la Bibliothèque →</p>
+            </div>
+            <div class="liste-item">
+                <strong>La Liberté — Fiche à lire</strong>
+                <span class="badge orange">Disponible le 15/09</span>
+            </div>
+            <div class="liste-item ferme">
+                <strong>Le Devoir — Devoir rendu</strong>
+                <span class="badge vert">Corrigé ✅</span>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>📊 Mon suivi</h2>
+            <p><strong>Devoirs rendus :</strong> <span id="nbRendus">0</span></p>
+            <p><strong>En attente de correction :</strong> <span id="nbAttente">0</span></p>
+            <p><strong>Corrigés :</strong> <span id="nbCorriges">0</span></p>
+        </div>
+    `;
+}
+
+// Déconnexion
+document.getElementById('btnDeconnexion').addEventListener('click', function() {
+    sessionStorage.removeItem('eleveConnecte');
+    window.location.href = 'connexion.html';
+});
+</script>
+
+</body>
+</html>

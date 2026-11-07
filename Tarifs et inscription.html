@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tarifs & Inscription — Cours de Philosophie</title>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',sans-serif}
+        :root{--bleu:#1565C0;--vert:#2E7D32;--orange:#E65100;--fond:#FAFAFA;--texte:#333;--bordure:#E0E0E0}
+        body{background:var(--fond);color:var(--texte);line-height:1.6}
+        header{background:linear-gradient(135deg,#0D47A1,#1565C0);color:white;padding:1.5rem 1rem;text-align:center}
+        header a{color:white;text-decoration:underline}
+        .container{max-width:800px;margin:0 auto;padding:2rem 1rem}
+        .card{background:white;border-radius:12px;box-shadow:0 3px 10px rgba(0,0,0,.08);padding:2rem;margin-bottom:2rem}
+        h2{color:var(--bleu);margin-bottom:1.5rem;border-bottom:2px solid var(--bleu);padding-bottom:.5rem}
+        h3{color:var(--vert);margin:1.5rem 0 .8rem}
+        label{display:block;font-weight:600;margin:1rem 0 .4rem}
+        input, select{width:100%;padding:.8rem;border:1px solid var(--bordure);border-radius:8px;font-size:1rem}
+        input:focus, select:focus{outline:none;border-color:var(--bleu);box-shadow:0 0 0 3px rgba(21,101,192,.15)}
+        .bouton{display:inline-block;padding:.9rem 2rem;border-radius:8px;text-decoration:none;font-weight:bold;transition:.3s;border:none;font-size:1rem;cursor:pointer;margin-top:1rem}
+        .bouton.prim{background:var(--vert);color:white;width:100%}
+        .bouton.prim:hover{background:#276F29}
+        .info-paiement{background:#F5F5F5;border-radius:10px;padding:1.5rem;margin:1.5rem 0;line-height:1.8}
+        .ref-philocours{font-size:1.3rem;font-weight:bold;color:var(--bleu);background:#E3F2FD;padding:.6rem 1.2rem;border-radius:6rem;display:inline-block;margin-top:.5rem;letter-spacing:1px}
+        .alerte{background:#FFF3E0;border-left:4px solid var(--orange);padding:1rem 1.5rem;border-radius:0 8px 8px 0;margin:1.5rem 0}
+        .succes{background:#E8F5E9;border-left:4px solid var(--vert);padding:1.5rem;border-radius:0 8px 8px 0;margin:1.5rem 0;display:none}
+        .ligne{border-bottom:1px solid var(--bordure);padding:.8rem 0}
+        .checks{margin-top:1.5rem}
+        .checks label{display:flex;align-items:flex-start;gap:.6rem;font-weight:normal;margin:.5rem 0;cursor:pointer}
+        .checks input{width:auto;margin-top:.2rem}
+        
+        /* Carte d'adhésion */
+        .carte-adhesion{width:100%;max-width:480px;margin:2rem auto;border-radius:16px;overflow:hidden;box-shadow:0 6px 20px rgba(0,0,0,.15);background:linear-gradient(135deg,#0D47A1,#1565C0);color:white;padding:2rem}
+        .carte-entete{text-align:center;margin-bottom:1.5rem}
+        .carte-titre{font-size:1.4rem;font-weight:bold;letter-spacing:1px}
+        .carte-corps{display:flex;gap:1.5rem;align-items:flex-start;background:rgba(255,255,255,.1);border-radius:10px;padding:1.5rem}
+        .carte-photo{width:100px;height:120px;background:rgba(255,255,255,.2);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:2.5rem;overflow:hidden}
+        .carte-photo img{width:100%;height:100%;object-fit:cover}
+        .carte-info{flex:1}
+        .carte-nom{font-size:1.3rem;font-weight:bold;margin-bottom:.5rem}
+        .carte-ligne{margin:.4rem 0;font-size:.95rem;opacity:.9}
+        .carte-label{font-weight:bold;opacity:1}
+        .carte-ticket{font-size:1.4rem;font-weight:bold;letter-spacing:3px;margin-top:.8rem;background:rgba(255,255,255,.2);padding:.6rem;border-radius:6px;text-align:center;font-family:monospace}
+        .carte-pied{text-align:center;margin-top:1rem;font-size:.85rem;opacity:.7}
+        .btn-telecharger{background:white;color:var(--bleu);border:none;padding:.8rem 2rem;border-radius:8px;font-weight:bold;cursor:pointer;margin-top:1rem;width:100%;font-size:1rem}
+        .btn-telecharger:hover{background:#f0f0f0}
+        
+        footer{background:#222;color:#aaa;text-align:center;padding:2rem 1rem;margin-top:3rem;font-size:.9rem}
+        @media(max-width:600px){.carte-corps{flex-direction:column;align-items:center;text-align:center}}
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>📚 Tarifs & Inscription</h1>
+    <p><a href="index.html">← Retour à l'accueil</a></p>
+</header>
+
+<div class="container">
+
+    <div class="card">
+        <h2>Informations importantes</h2>
+        <div class="ligne"><strong>💰 Frais mensuels :</strong><br>10 000 Ar / mois</div>
+        <div class="ligne"><strong>📘 Durée — Première :</strong><br>9 mois et 15 jours → suppression automatique</div>
+        <div class="ligne"><strong>📙 Durée — Terminale :</strong><br>10 mois et 15 jours → suppression automatique</div>
+        <div class="ligne"><strong>📅 Ouverture des inscriptions :</strong><br>8 septembre de chaque année</div>
+        <div class="ligne"><strong>💳 Mode de paiement :</strong><br>Uniquement par MVola</div>
+    </div>
+
+    <div class="alerte">
+        <strong>⚠️ Règles à lire avant de s'inscrire :</strong>
+        <ul style="margin:.8rem 0 0 1.2rem">
+            <li>Chaque devoir doit être rendu dans les <strong>3 jours</strong> après publication.</li>
+            <li>Trois devoirs non rendus = <strong>exclusion définitive sans remboursement</strong>.</li>
+            <li>À échéance, le compte est <strong>supprimé automatiquement</strong>.</li>
+            <li>Le paiement confirme l'acceptation de ces règles.</li>
+        </ul>
+    </div>
+
+    <div class="card">
+        <h2>Formulaire d'inscription</h2>
+        
+        <form id="formInscription">
+            <label for="nom">Nom *</label>
+            <input type="text" id="nom" required placeholder="Ex: RAKOTO">
+
+            <label for="prenom">Prénom(s) *</label>
+            <input type="text" id="prenom" required placeholder="Ex: Marie">
+
+            <label for="classe">Classe *</label>
+            <select id="classe" required>
+                <option value="">Choisissez votre classe</option>
+                <option value="premiere">Première</option>
+                <option value="terminale">Terminale</option>
+            </select>
+
+            <label for="photo">Photo d'identité (pour la carte d'adhésion)</label>
+            <input type="file" id="photo" accept="image/*" style="padding:.5rem 0">
+
+            <label for="email">Adresse e-mail *</label>
+            <input type="email" id="email" required placeholder="votre@email.com">
+
+            <label for="telephone">Téléphone / MVola *</label>
+            <input type="tel" id="telephone" required placeholder="+261 XX XX XX XX">
+
+            <h3>💳 Paiement — 10 000 Ar</h3>
+            <div class="info-paiement">
+                <p><strong>Service :</strong> MVola</p>
+                <p><strong>Bénéficiaire :</strong> Nasandratriniaina Julio</p>
+                <p><strong>Numéro MVola :</strong> +261 38 552 8349</p>
+                <p><strong>Montant :</strong> 10 000 Ar</p>
+                <p><strong>Référence à indiquer dans le paiement :</strong><br>
+                <span class="ref-philocours">PHILOCOURS</span></p>
+            </div>
+
+            <label for="refTransaction">N° de transaction MVola *</label>
+            <input type="text" id="refTransaction" required placeholder="Numéro reçu dans le message de confirmation">
+
+            <div class="checks">
+                <label>
+                    <input type="checkbox" id="accepte1" required>
+                    J'accepte les règles : 3 jours pour rendre chaque devoir, 3 non-rendus = exclusion sans remboursement.
+                </label>
+                <label>
+                    <input type="checkbox" id="accepte2" required>
+                    J'ai pris connaissance de la durée de validité de mon compte et de sa suppression automatique.
+                </label>
+            </div>
+
+            <button type="submit" class="bouton prim">✅ Valider mon inscription</button>
+        </form>
+
+        <div class="succes" id="blocSucces">
+            <h3>🎉 Inscription enregistrée !</h3>
+            <p>Un e-mail contenant votre <strong>carte d'adhésion au format JPEG</strong> vous a été envoyé, ainsi qu'à l'administrateur.</p>
+            
+            <!-- Carte d'adhésion -->
+            <div class="carte-adhesion" id="carteAdhesion">
+                <div class="carte-entete">
+                    <div class="carte-titre">CARTE D'ADHÉSION</div>
+                    <p style="opacity:.7;font-size:.9rem">Cours de Philosophie — Mananjary</p>
+                </div>
+                <div class="carte-corps">
+                    <div class="carte-photo" id="cadrePhoto">📷</div>
+                    <div class="carte-info">
+                        <div class="carte-nom" id="carteNom">—</div>
+                        <div class="carte-ligne"><span class="carte-label">Classe :</span> <span id="carteClasse">—</span></div>
+                        <div class="carte-ligne"><span class="carte-label">Login :</span> <span id="carteLogin">—</span></div>
+                        <div class="carte-ticket" id="carteTicket">—</div>
+                    </div>
+                </div>
+                <div class="carte-pied">
+                    Valide jusqu'au <span id="carteFinValidite">—</span>
+                </div>
+            </div>
+
+            <button class="btn-telecharger" id="btnTelecharger">📥 Télécharger ma carte (JPEG)</button>
+            
+            <div style="margin-top:2rem;text-align:center">
+                <a href="connexion.html" class="bouton" style="background:#1565C0;color:white">🔐 Aller à la connexion</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>Besoin d'aide ?</h2>
+        <p>📧 E-mail : <strong>rnj2618@gmail.com</strong></p>
+        <p>📱 Téléphone / WhatsApp : <strong>+261 38 552 8349</strong></p>
+        <p>📍 Mananjary — Madagascar</p>
+    </div>
+</div>
+
+<footer>
+    <p>© 2026 — Cours de Philosophie. Tous droits réservés.</p>
+</footer>
+
+<script>
+// Génération ticket
+function genererTicket() {
+    return Math.floor(100000 + Math.random() * 900000).toString();
+}
+
+// Prévisualisation photo
+let photoBase64 = null;
+document.getElementById('photo').addEventListener('change', function(e) {
+    const fichier = e.target.files[0];
+    if (!fichier) return;
+    const lecteur = new FileReader();
+    lecteur.onload = function(ev) {
+        photoBase64 = ev.target.result;
+        document.getElementById('cadrePhoto').innerHTML = `<img src="${photoBase64}" alt="Photo d'identité">`;
+    };
+    lecteur.readAsDataURL(fichier);
+});
+
+// Soumission du formulaire
+document.getElementById('formInscription').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const nom = document.getElementById('nom').value;
+    const prenom = document.getElementById('prenom').value;
+    const classe = document.getElementById('classe').value;
+    const email = document.getElementById('email').value;
+    const telephone = document.getElementById('telephone').value;
+    const refTransaction = document.getElementById('refTransaction').value;
+    
+    const login = (prenom.toLowerCase() + '.' + nom.toLowerCase().replace(/\s/g,'')).substring(0,20);
+    const ticket = genererTicket();
+    
+    // Date de fin
+    const aujourdhui = new Date();
+    const finValidite = new Date(aujourdhui);
+    if (classe === 'premiere') {
+        finValidite.setMonth(aujourdhui.getMonth() + 9);
+        finValidite.setDate(aujourdhui.getDate() + 15);
+    } else {
+        finValidite.setMonth(aujourdhui.getMonth() + 10);
+        finValidite.setDate(aujourdhui.getDate() + 15);
+    }
+    
+    // Données élève
+    const donneesEleve = {
+        nom, prenom, login, ticket, classe, email, telephone,
+        referencePaiement: "PHILOCOURS",
+        refTransaction,
+        photo: photoBase64,
+        dateInscription: aujourdhui.toLocaleDateString('fr-FR'),
+        finValidite: finValidite.toLocaleDateString('fr-FR'),
+        avertissements: 0,
+        statut: 'actif'
+    };
+    
+    // Sauvegarde
+    const listeEleves = JSON.parse(localStorage.getItem('listeEleves') || '[]');
+    listeEleves.push(donneesEleve);
+    localStorage.setItem('listeEleves', JSON.stringify(listeEleves));
+    
+    // Remplissage de la carte
+    document.getElementById('carteNom').textContent = `${prenom} ${nom}`;
+    document.getElementById('carteClasse').textContent = classe === 'premiere' ? 'Première' : 'Terminale';
+    document.getElementById('carteLogin').textContent = login;
+    document.getElementById('carteTicket').textContent = ticket;
+    document.getElementById('carteFinValidite').textContent = finValidite.toLocaleDateString('fr-FR');
+    
+    if (photoBase64) {
+        document.getElementById('cadrePhoto').innerHTML = `<img src="${photoBase64}" alt="Photo">`;
+    }
+    
+    // Affichage succès
+    document.getElementById('formInscription').style.display = 'none';
+    document.getElementById('blocSucces').style.display = 'block';
+    
+    // Simulation e-mail avec carte JPEG
+    console.log('--- E-MAIL À L\'ÉLÈVE ---');
+    console.log('Destinataire :', email);
+    console.log('Objet : Votre carte d\'adhésion — Cours de Philosophie');
+    console.log('Pièce jointe : Carte_Adhesion_' + login + '.jpeg');
+    console.log('Bonjour ' + prenom + ',');
+    console.log('Voici votre carte d\'adhésion. Conservez-la précieusement.');
+    console.log('Ticket d\'accès :', ticket);
+    console.log('Valide jusqu\'au :', finValidite.toLocaleDateString('fr-FR'));
+    console.log('Référence de paiement : PHILOCOURS');
+    
+    console.log('\n--- E-MAIL À L\'ADMINISTRATEUR ---');
+    console.log('Destinataire : rnj2618@gmail.com');
+    console.log('Nouvel adhérent :', prenom, nom, '|', classe);
+    console.log('Ticket :', ticket, '| Référence : PHILOCOURS');
+    console.log('Transaction MVola :', refTransaction);
+    
+    // Téléchargement carte JPEG
+    document.getElementById('btnTelecharger').addEventListener('click', function() {
+        alert('📥 La carte d\'adhésion sera téléchargée au format JPEG.\nEn production, l\'image se générera automatiquement avec votre photo, nom, classe et code ticket.');
+    });
+});
+</script>
+
+</body>
+</html>

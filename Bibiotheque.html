@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bibliothèque — Cours de Philosophie</title>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',sans-serif}
+        :root{--bleu:#1565C0;--vert:#2E7D32;--orange:#E65100;--gris:#666;--fond:#FAFAFA;--texte:#333;--bordure:#E0E0E0}
+        body{background:var(--fond);color:var(--texte);line-height:1.6}
+        header{background:linear-gradient(135deg,#0D47A1,#1565C0);color:white;padding:1.5rem 1rem}
+        .header-top{max-width:1000px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem}
+        .retour{color:white;text-decoration:none;opacity:.9}
+        .retour:hover{text-decoration:underline}
+        .container{max-width:1000px;margin:0 auto;padding:2rem 1rem}
+        .onglets{display:flex;gap:.5rem;margin-bottom:2rem;flex-wrap:wrap}
+        .onglet{padding:.8rem 1.5rem;border:none;border-radius:8px 8px 0 0;cursor:pointer;font-weight:bold;background:#eee;color:var(--gris)}
+        .onglet.actif{background:white;color:var(--bleu);box-shadow:0 -2px 5px rgba(0,0,0,.05)}
+        .categorie{display:none}
+        .categorie.visible{display:block}
+        .recherche{margin-bottom:1.5rem}
+        .recherche input{width:100%;max-width:500px;padding:.9rem;border:1px solid var(--bordure);border-radius:8px;font-size:1rem}
+        .liste-doc{display:grid;gap:1rem}
+        .doc{background:white;border-radius:10px;padding:1.5rem;box-shadow:0 2px 8px rgba(0,0,0,.06);transition:.2s}
+        .doc.verrouille{opacity:.6;background:#f9f9f9}
+        .doc-entete{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:.5rem;margin-bottom:.5rem}
+        .doc-titre{font-weight:bold;font-size:1.1rem;color:var(--bleu)}
+        .doc-date{font-size:.9rem;color:var(--gris)}
+        .doc-actions{margin-top:.8rem;display:flex;gap:.8rem;flex-wrap:wrap}
+        .lien-doc{display:inline-flex;align-items:center;gap:.4rem;padding:.6rem 1.2rem;border-radius:6px;text-decoration:none;font-weight:500}
+        .lien-doc.pdf{background:#E3F2FD;color:var(--bleu)}
+        .lien-doc.pdf:hover{background:#D0EAF7}
+        .lien-doc.lecture{background:#E8F5E9;color:var(--vert)}
+        .lien-doc.lecture:hover{background:#D9F2DD}
+        .verrouille-msg{color:var(--orange);font-style:italic;margin-top:.5rem}
+        .badge{font-size:.8rem;padding:.2rem .6rem;border-radius:4px;font-weight:bold}
+        .badge.nouveau{background:#E8F5E9;color:var(--vert)}
+        .badge.a-venir{background:#FFF3E0;color:var(--orange)}
+        .admin-zone{background:#F5F5F5;border:2px dashed #ccc;border-radius:10px;padding:1.5rem;margin-top:3rem}
+        .admin-titre{font-weight:bold;margin-bottom:1rem;color:#666}
+        label{display:block;font-weight:600;margin:1rem 0 .4rem}
+        input, select, textarea{width:100%;padding:.8rem;border:1px solid var(--bordure);border-radius:6px}
+        .btn-ajouter{background:var(--vert);color:white;border:none;padding:.9rem 2rem;border-radius:6px;font-weight:bold;cursor:pointer;margin-top:1rem}
+        .btn-ajouter:hover{background:#276F29}
+        footer{background:#222;color:#aaa;text-align:center;padding:2rem 1rem;margin-top:3rem;font-size:.9rem}
+        .cache{display:none}
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="header-top">
+        <div>
+            <h1>📚 Bibliothèque & Ressources</h1>
+            <a href="espace-eleve.html" class="retour">← Retour à mon espace</a>
+        </div>
+    </div>
+</header>
+
+<div class="container">
+    <div class="recherche">
+        <input type="text" id="champRecherche" placeholder="🔍 Rechercher un document...">
+    </div>
+
+    <!-- Onglets -->
+    <div class="onglets">
+        <button class="onglet actif" data-cat="cours">📖 Cours par thème</button>
+        <button class="onglet" data-cat="methode">🛠️ Méthode & Outils</button>
+        <button class="onglet" data-cat="auteurs">🧠 Auteurs</button>
+        <button class="onglet" data-cat="annales">📋 Annales & Sujets</button>
+    </div>
+
+    <!-- Cours par thème -->
+    <div class="categorie visible" id="cat-cours">
+        <div class="liste-doc" id="liste-cours">
+            <!-- Documents générés dynamiquement -->
+        </div>
+    </div>
+
+    <!-- Méthode & Outils -->
+    <div class="categorie" id="cat-methode">
+        <div class="liste-doc" id="liste-methode">
+        </div>
+    </div>
+
+    <!-- Auteurs -->
+    <div class="categorie" id="cat-auteurs">
+        <div class="liste-doc" id="liste-auteurs">
+        </div>
+    </div>
+
+    <!-- Annales & Sujets -->
+    <div class="categorie" id="cat-annales">
+        <div class="liste-doc" id="liste-annales">
+        </div>
+    </div>
+
+    <!-- Zone dépôt enseignant -->
+    <div class="admin-zone" id="zoneAdmin">
+        <p class="admin-titre">🔒 Espace Enseignant — Déposer une ressource</p>
+        <form id="formRessource">
+            <label>Titre du document</label>
+            <input type="text" id="titreDoc" placeholder="Ex: La Vérité — Fiche complète" required>
+            
+            <label>Catégorie</label>
+            <select id="catDoc" required>
+                <option value="cours">Cours par thème</option>
+                <option value="methode">Méthode & Outils</option>
+                <option value="auteurs">Auteurs</option>
+                <option value="annales">Annales & Sujets</option>
+            </select>
+            
+            <label>Niveau concerné</label>
+            <select id="niveauDoc" required>
+                <option value="tous">Tous les élèves</option>
+                <option value="premiere">Première uniquement</option>
+                <option value="terminale">Terminale uniquement</option>
+            </select>
+            
+            <label>Date de publication</label>
+            <input type="date" id="datePubDoc" required>
+            
+            <label>Lien ou contenu du document</label>
+            <textarea id="contenuDoc" rows="4" placeholder="Texte ou lien vers le PDF" required></textarea>
+            
+            <button type="submit" class="btn-ajouter">📤 Publier la ressource</button>
+        </form>
+    </div>
+</div>
+
+<footer>
+    <p>© 2026 — Cours de Philosophie. Mananjary — Madagascar</p>
+    <p>📧 rnj2618@gmail.com | 📱 +261 38 552 8349</p>
+</footer>
+
+<script>
+// Vérification connexion
+const eleve = JSON.parse(sessionStorage.getItem('eleveConnecte'));
+if (!eleve) {
+    document.body.innerHTML = '<div style="text-align:center;padding:4rem"><h2>🔒 Accès réservé</h2><p>Connectez-vous d\'abord.</p><a href="connexion.html" style="display:inline-block;margin-top:1rem;padding:.8rem 2rem;background:#1565C0;color:white;border-radius:6px;text-decoration:none">Se connecter</a></div>';
+}
+
+// Base de ressources
+let ressources = JSON.parse(localStorage.getItem('ressources') || JSON.stringify([
+    {
+        id: 1,
+        titre: "La Vérité — Fiche complète",
+        categorie: "cours",
+        niveau: "tous",
+        datePub: "2026-09-08",
+        contenu: "Fiche détaillée : notions, auteurs, citations, plan de dissertation",
+        acces: "libre"
+    },
+    {
+        id: 2,
+        titre: "La Liberté — Fiche complète",
+        categorie: "cours",
+        niveau: "tous",
+        datePub: "2026-09-15",
+        contenu: "À paraître",
+        acces: "verrouille"
+    },
+    {
+        id: 3,
+        titre: "Comment faire une dissertation ? — Guide pas à pas",
+        categorie: "methode",
+        niveau: "tous",
+        datePub: "2026-09-01",
+        contenu: "Méthode en 5 étapes + exemple",
+        acces: "libre"
+    },
+    {
+        id: 4,
+        titre: "Platon — Fiche synthétique",
+        categorie: "auteurs",
+        niveau: "tous",
+        datePub: "2026-09-01",
+        contenu: "Biographie, œuvres clés, concepts essentiels",
+        acces: "libre"
+    },
+    {
+        id: 5,
+        titre: "Sujets d'entraînement — La Vérité",
+        categorie: "annales",
+        niveau: "tous",
+        datePub: "2026-09-08",
+        contenu: "3 sujets + indications de méthode",
+        acces: "libre"
+    }
+]));
+
+// Affichage des documents
+function afficherRessources(categorieFiltre, termeRecherche = "") {
+    const aujourdhui = new Date().toISOString().split('T')[0];
+    
+    ressources.forEach(doc => {
+        const conteneur = document.getElementById(`liste-${doc.categorie}`);
+        if (!conteneur) return;
+        
+        const datePub = new Date(doc.datePub);
+        const datePubStr = datePub.toLocaleDateString('fr-FR');
+        const estLibre = doc.datePub <= aujourdhui;
+        const correspondRecherche = termeRecherche === "" || 
+            doc.titre.toLowerCase().includes(termeRecherche.toLowerCase());
+        
+        if (!correspondRecherche) return;
+        
+        const existe = document.getElementById(`doc-${doc.id}`);
+        if (existe) return;
+        
+        const carte = document.createElement('div');
+        carte.id = `doc-${doc.id}`;
+        carte.className = `doc ${!estLibre ? 'verrouille' : ''}`;
+        carte.innerHTML = `
+            <div class="doc-entete">
+                <span class="doc-titre">${doc.titre}</span>
+                <span class="doc-date">${datePubStr}</span>
+                ${estLibre ? '<span class="badge nouveau">Nouveau</span>' : '<span class="badge a-venir">À venir</span>'}
+            </div>
+            <p style="color:var(--gris);margin:.5rem 0">${doc.contenu}</p>
+            ${estLibre ? `
+                <div class="doc-actions">
+                    <a href="#" class="lien-doc lecture" onclick="alert('Ouverture : ${doc.titre}');return false;">📖 Lire en ligne</a>
+                    <a href="#" class="lien-doc pdf" onclick="alert('Téléchargement : ${doc.titre}.pdf');return false;">📥 PDF</a>
+                </div>
+            ` : `<p class="verrouille-msg">🔒 Disponible à partir du ${datePubStr}</p>`}
+        `;
+        conteneur.appendChild(carte);
+    });
+}
+
+// Changement d'onglet
+document.querySelectorAll('.onglet').forEach(onglet => {
+    onglet.addEventListener('click', function() {
+        document.querySelectorAll('.onglet').forEach(o => o.classList.remove('actif'));
+        document.querySelectorAll('.categorie').forEach(c => c.classList.remove('visible'));
+        this.classList.add('actif');
+        document.getElementById(`cat-${this.dataset.cat}`).classList.add('visible');
+    });
+});
+
+// Recherche
+document.getElementById('champRecherche').addEventListener('input', function() {
+    const terme = this.value;
+    document.querySelectorAll('.doc').forEach(d => d.remove());
+    afficherRessources('tous', terme);
+});
+
+// Dépôt nouvelle ressource
+document.getElementById('formRessource').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const nouveauDoc = {
+        id: Date.now(),
+        titre: document.getElementById('titreDoc').value,
+        categorie: document.getElementById('catDoc').value,
+        niveau: document.getElementById('niveauDoc').value,
+        datePub: document.getElementById('datePubDoc').value,
+        contenu: document.getElementById('contenuDoc').value,
+        acces: "libre"
+    };
+    ressources.push(nouveauDoc);
+    localStorage.setItem('ressources', JSON.stringify(ressources));
+    this.reset();
+    alert('✅ Ressource ajoutée ! Elle apparaîtra à la date de publication.');
+    document.querySelectorAll('.doc').forEach(d => d.remove());
+    afficherRessources();
+});
+
+// Initialisation
+afficherRessources();
+</script>
+
+</body>
+</html>

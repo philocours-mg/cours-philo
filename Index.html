@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cours de Philosophie — Mananjary</title>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',sans-serif}
+        :root{--bleu-fonce:#0D47A1;--bleu:#1565C0;--bleu-clair:#E3F2FD;--vert:#2E7D32;--orange:#E65100;--gris:#666;--fond:#FAFAFA;--texte:#333;--bordure:#E0E0E0}
+        body{background:var(--fond);color:var(--texte);line-height:1.6}
+        
+        /* En-tête */
+        header{background:linear-gradient(135deg,#0D47A1,#1565C0);color:white;padding:3rem 1rem;text-align:center}
+        .header-contenu{max-width:900px;margin:0 auto}
+        header h1{font-size:2.2rem;margin-bottom:.5rem}
+        header p{font-size:1.2rem;opacity:.9;margin-bottom:2rem}
+        .bouton-groupe{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap}
+        .bouton{display:inline-block;padding:1rem 2rem;border-radius:8px;text-decoration:none;font-weight:bold;transition:.3s;border:none;font-size:1rem;cursor:pointer}
+        .bouton.prim{background:var(--vert);color:white}
+        .bouton.prim:hover{background:#276F29;transform:translateY(-2px)}
+        .bouton.sec{background:white;color:var(--bleu);border:2px solid white}
+        .bouton.sec:hover{background:rgba(255,255,255,.2)}
+        
+        /* Section générale */
+        .container{max-width:1000px;margin:0 auto;padding:3rem 1rem}
+        h2{color:var(--bleu);text-align:center;margin-bottom:2rem;font-size:1.8rem}
+        .intro{text-align:center;max-width:700px;margin:0 auto 3rem;color:var(--gris);font-size:1.1rem}
+        
+        /* Points forts */
+        .points{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:2rem;margin-bottom:4rem}
+        .point{background:white;border-radius:12px;padding:2rem;box-shadow:0 3px 10px rgba(0,0,0,.08);text-align:center;transition:.3s}
+        .point:hover{transform:translateY(-5px);box-shadow:0 6px 20px rgba(0,0,0,.12)}
+        .point-icone{font-size:2.5rem;margin-bottom:1rem}
+        .point h3{color:var(--bleu);margin-bottom:.8rem}
+        .point p{color:var(--gris);font-size:.95rem}
+        
+        /* Informations pratiques */
+        .infos{background:white;border-radius:12px;box-shadow:0 3px 10px rgba(0,0,0,.08);padding:2rem}
+        .infos-ligne{display:flex;align-items:center;gap:1rem;padding:1rem 0;border-bottom:1px solid var(--bordure)}
+        .infos-ligne:last-child{border-bottom:none}
+        .infos-icone{font-size:1.5rem}
+        .infos-texte strong{color:var(--texte)}
+        .infos-texte{color:var(--gris)}
+        
+        /* Paiement */
+        .paiement{background:var(--bleu-clair);border-radius:12px;padding:2rem;margin:3rem 0;text-align:center}
+        .paiement h3{color:var(--bleu);margin-bottom:1rem}
+        .ref-philocours{font-size:1.5rem;font-weight:bold;color:var(--bleu);background:white;padding:1rem 2rem;border-radius:8px;display:inline-block;margin:1rem 0;letter-spacing:2px;box-shadow:0 2px 6px rgba(21,101,192,.15)}
+        
+        /* Pied de page */
+        footer{background:#222;color:#aaa;text-align:center;padding:2rem 1rem;margin-top:3rem;font-size:.9rem}
+        footer p{margin:.3rem 0}
+        
+        @media(max-width:600px){
+            header h1{font-size:1.6rem}
+            .bouton-groupe{flex-direction:column}
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="header-contenu">
+        <h1>📚 Cours de Philosophie</h1>
+        <p>Préparation à la Première et à la Terminale — Mananjary, Madagascar</p>
+        <div class="bouton-groupe">
+            <a href="tarifs-inscription.html" class="bouton prim">📤 S'inscrire maintenant</a>
+            <a href="connexion.html" class="bouton sec">🔐 Déjà inscrit ? Se connecter</a>
+        </div>
+    </div>
+</header>
+
+<div class="container">
+    <h2>Pourquoi rejoindre ce cours ?</h2>
+    <p class="intro">Un accompagnement structuré pour maîtriser la philosophie, réussir ses devoirs et construire sa propre réflexion — année après année.</p>
+
+    <div class="points">
+        <div class="point">
+            <div class="point-icone">📖</div>
+            <h3>Cours complets</h3>
+            <p>Tous les thèmes du programme expliqués avec clarté, fiches de synthèse et références aux auteurs essentiels.</p>
+        </div>
+        <div class="point">
+            <div class="point-icone">✍️</div>
+            <h3>Entraînement régulier</h3>
+            <p>Devoirs chaque semaine à rendre dans les 3 jours. Corrections et conseils personnalisés pour progresser.</p>
+        </div>
+        <div class="point">
+            <div class="point-icone">🛠️</div>
+            <h3>Méthode pas à pas</h3>
+            <p>Apprendre à construire une dissertation, analyser un texte et organiser ses idées avec rigueur.</p>
+        </div>
+        <div class="point">
+            <div class="point-icone">🪪</div>
+            <h3>Suivi personnel</h3>
+            <p>Une carte d'adhésion, un accès individuel et un suivi tout au long de l'année scolaire.</p>
+        </div>
+    </div>
+
+    <h2>Informations pratiques</h2>
+    <div class="infos">
+        <div class="infos-ligne">
+            <span class="infos-icone">💰</span>
+            <div class="infos-texte"><strong>Frais d'adhésion :</strong> 10 000 Ar / mois</div>
+        </div>
+        <div class="infos-ligne">
+            <span class="infos-icone">📘</span>
+            <div class="infos-texte"><strong>Classe de Première :</strong> Accès valide 9 mois et 15 jours</div>
+        </div>
+        <div class="infos-ligne">
+            <span class="infos-icone">📙</span>
+            <div class="infos-texte"><strong>Classe de Terminale :</strong> Accès valide 10 mois et 15 jours</div>
+        </div>
+        <div class="infos-ligne">
+            <span class="infos-icone">📅</span>
+            <div class="infos-texte"><strong>Début de la plateforme :</strong> 8 septembre de chaque année</div>
+        </div>
+        <div class="infos-ligne">
+            <span class="infos-icone">📍</span>
+            <div class="infos-texte"><strong>Localisation :</strong> Mananjary — Madagascar</div>
+        </div>
+        <div class="infos-ligne">
+            <span class="infos-icone">📧</span>
+            <div class="infos-texte"><strong>Contact :</strong> rnj2618@gmail.com</div>
+        </div>
+        <div class="infos-ligne">
+            <span class="infos-icone">📱</span>
+            <div class="infos-texte"><strong>Téléphone / WhatsApp :</strong> +261 38 552 8349</div>
+        </div>
+    </div>
+
+    <div class="paiement">
+        <h3>💳 Paiement par MVola</h3>
+        <p>Effectuez votre règlement de <strong>10 000 Ar</strong> au :</p>
+        <p style="font-size:1.1rem;margin:.5rem 0"><strong>Nasandratriniaina Julio</strong><br>📞 +261 38 552 8349</p>
+        <p>En indiquant comme référence :</p>
+        <div class="ref-philocours">PHILOCOURS</div>
+        <p style="font-size:.95rem;color:var(--gris);margin-top:1rem">Conservez votre numéro de transaction, il vous sera demandé lors de l'inscription.</p>
+        <a href="tarifs-inscription.html" class="bouton prim" style="margin-top:1.5rem">📤 Passer à l'inscription</a>
+    </div>
+</div>
+
+<footer>
+    <p>© 2026 — Cours de Philosophie. Tous droits réservés.</p>
+    <p>Plateforme éducative — Mananjary, Madagascar</p>
+    <p>Ouverture du 8 septembre jusqu'à la fin de l'année scolaire.</p>
+</footer>
+
+</body>
+</html>

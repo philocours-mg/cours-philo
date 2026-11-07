@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Se connecter — Cours de Philosophie</title>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',sans-serif}
+        :root{--bleu:#1565C0;--vert:#2E7D32;--rouge:#D32F2F;--fond:#FAFAFA;--texte:#333;--bordure:#E0E0E0}
+        body{background:var(--fond);color:var(--texte);line-height:1.6;min-height:100vh;display:flex;flex-direction:column}
+        header{background:linear-gradient(135deg,#0D47A1,#1565C0);color:white;padding:1.5rem 1rem;text-align:center}
+        header a{color:white;text-decoration:underline}
+        .container{max-width:480px;margin:0 auto;padding:3rem 1rem;flex:1;display:flex;align-items:center}
+        .card{background:white;border-radius:12px;box-shadow:0 4px 15px rgba(0,0,0,.1);padding:2.5rem;width:100%}
+        h2{color:var(--bleu);text-align:center;margin-bottom:2rem}
+        label{display:block;font-weight:600;margin:1.2rem 0 .4rem}
+        input{width:100%;padding:.9rem;border:1px solid var(--bordure);border-radius:8px;font-size:1rem}
+        input:focus{outline:none;border-color:var(--bleu);box-shadow:0 0 0 3px rgba(21,101,192,.15)}
+        .bouton{display:inline-block;width:100%;padding:1rem;border-radius:8px;text-decoration:none;font-weight:bold;transition:.3s;border:none;font-size:1rem;cursor:pointer;margin-top:1.5rem}
+        .bouton.prim{background:var(--bleu);color:white}
+        .bouton.prim:hover{background:#0D47A1}
+        .erreur{background:#FFEBEE;border-left:4px solid var(--rouge);padding:1rem 1.5rem;border-radius:0 8px 8px 0;margin-top:1.5rem;display:none;color:var(--rouge)}
+        .info{background:#E3F2FD;border-left:4px solid var(--bleu);padding:1rem 1.5rem;border-radius:0 8px 8px 0;margin-top:1.5rem;font-size:.95rem}
+        .deja-inscrit{text-align:center;margin-top:1.5rem;padding-top:1.5rem;border-top:1px solid var(--bordure)}
+        .deja-inscrit a{color:var(--bleu);text-decoration:none;font-weight:500}
+        .deja-inscrit a:hover{text-decoration:underline}
+        footer{background:#222;color:#aaa;text-align:center;padding:2rem 1rem;margin-top:auto;font-size:.9rem}
+        @media(max-width:600px){.container{padding:1.5rem .5rem}.card{padding:2rem 1.5rem}}
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>📚 Cours de Philosophie</h1>
+    <p><a href="index.html">← Retour à l'accueil</a></p>
+</header>
+
+<div class="container">
+    <div class="card">
+        <h2>🔐 Se connecter</h2>
+        
+        <form id="formConnexion">
+            <label for="login">Votre login</label>
+            <input type="text" id="login" required placeholder="ex: marie.rakoto">
+
+            <label for="ticket">Code ticket d'accès</label>
+            <input type="text" id="ticket" required placeholder="6 chiffres — ex: 482915" maxlength="6">
+
+            <button type="submit" class="bouton prim">✅ Accéder à mon espace</button>
+        </form>
+
+        <div class="erreur" id="blocErreur"></div>
+
+        <div class="info">
+            <strong>💡 Vous n'avez pas encore votre compte ?</strong><br>
+            Inscrivez-vous d'abord et vous recevrez votre login et votre code ticket instantanément.
+        </div>
+
+        <div class="deja-inscrit">
+            <a href="tarifs-inscription.html">📤 S'inscrire maintenant</a>
+        </div>
+    </div>
+</div>
+
+<footer>
+    <p>© 2026 — Cours de Philosophie. Tous droits réservés.</p>
+    <p>📍 Mananjary — Madagascar | 📧 rnj2618@gmail.com | 📱 +261 38 552 8349</p>
+</footer>
+
+<script>
+document.getElementById('formConnexion').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const loginSaisi = document.getElementById('login').value.trim().toLowerCase();
+    const ticketSaisi = document.getElementById('ticket').value.trim();
+    const blocErreur = document.getElementById('blocErreur');
+    
+    // Récupération de la base des inscrits
+    const listeEleves = JSON.parse(localStorage.getItem('listeEleves') || '[]');
+    
+    // Recherche de l'élève correspondant
+    const eleve = listeEleves.find(e => 
+        e.login === loginSaisi && e.ticket === ticketSaisi
+    );
+    
+    if (eleve) {
+        // Vérification de la validité du compte
+        const aujourdhui = new Date();
+        const dateFin = new Date(eleve.finValidite.split('/').reverse().join('-'));
+        
+        if (aujourdhui > dateFin) {
+            blocErreur.innerHTML = '<strong>⚠️ Votre compte est arrivé à échéance.</strong><br>Il a été supprimé conformément à sa durée de validité.<br><a href="renouvellement.html" style="color:inherit;font-weight:bold">Renouveler ou se réinscrire →</a>';
+            blocErreur.style.display = 'block';
+            return;
+        }
+        
+        if (eleve.statut === 'supprime' || eleve.statut === 'exclu') {
+            blocErreur.innerHTML = '<strong>❌ Accès refusé.</strong><br>Votre compte a été ' + 
+                (eleve.statut === 'exclu' ? 'exclu pour non-respect des règles de rendu.' : 'supprimé.') +
+                '<br><a href="renouvellement.html" style="color:inherit;font-weight:bold">Se réinscrire →</a>';
+            blocErreur.style.display = 'block';
+            return;
+        }
+        
+        // Connexion réussie — stockage de la session
+        sessionStorage.setItem('eleveConnecte', JSON.stringify(eleve));
+        
+        // Redirection vers l'espace personnel
+        blocErreur.style.display = 'none';
+        window.location.href = 'espace-eleve.html';
+        
+    } else {
+        blocErreur.innerHTML = '<strong>❌ Login ou code ticket incorrect.</strong><br>Vérifiez votre saisie ou assurez-vous d\'être bien inscrit.<br><a href="tarifs-inscription.html" style="color:inherit;font-weight:bold">S\'inscrire →</a>';
+        blocErreur.style.display = 'block';
+    }
+});
+</script>
+
+</body>
+</html>
