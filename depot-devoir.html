@@ -22,12 +22,21 @@
         .temps-restant.vert{color:var(--vert)}
         .temps-restant.orange{color:var(--orange)}
         .temps-restant.rouge{color:var(--rouge)}
-        .form-groupe{margin-bottom:1.2rem}
-        label{display:block;font-weight:600;margin-bottom:.4rem}
-        input[type="text"], textarea, input[type="file"]{width:100%;padding:.9rem;border:1px solid var(--bordure);border-radius:8px;font-size:1rem}
-        input[type="file"]{padding:.6rem .9rem;background:#f9f9f9}
+        .form-groupe{margin-bottom:1.5rem}
+        label{display:block;font-weight:600;margin-bottom:.6rem}
+        input[type="text"], textarea{width:100%;padding:.9rem;border:1px solid var(--bordure);border-radius:8px;font-size:1rem}
         textarea{min-height:180px;resize:vertical}
         input:focus, textarea:focus{outline:none;border-color:var(--bleu);box-shadow:0 0 0 3px rgba(21,101,192,.15)}
+        
+        /* --- Zone d'aperçu comme à l'inscription --- */
+        .zone-fichier-apercu{border:2px dashed var(--bordure);border-radius:10px;padding:2rem;text-align:center;cursor:pointer;transition:.3s;margin-top:.5rem}
+        .zone-fichier-apercu:hover{border-color:var(--bleu);background:#E3F2FD}
+        .zone-fichier-apercu.selectionne{border-style:solid;border-color:var(--vert);background:#E8F5E9}
+        .icone-televersement{font-size:2.5rem;margin-bottom:.5rem}
+        .nom-fichier-selectionne{font-weight:bold;color:var(--bleu);margin-top:.5rem;word-break:break-all}
+        .apercu-image{max-width:100%;max-height:200px;border-radius:8px;margin-top:1rem;box-shadow:0 2px 8px rgba(0,0,0,.1)}
+        /* --- Fin zone aperçu --- */
+        
         .choix-mode{display:flex;gap:1rem;margin-bottom:1.5rem;flex-wrap:wrap}
         .choix{flex:1;min-width:200px;padding:1rem;border:2px solid var(--bordure);border-radius:8px;cursor:pointer;transition:.3s;text-align:center}
         .choix.actif{border-color:var(--bleu);background:#E3F2FD;font-weight:bold}
@@ -37,7 +46,6 @@
         .bouton.vert{background:var(--vert);color:white}
         .bouton.vert:hover{background:#276F29}
         .bouton.sec{background:var(--bleu);color:white;margin-top:1rem;text-align:center}
-        .nom-fichier{margin-top:.5rem;color:var(--bleu);font-weight:bold}
         .succes{text-align:center;padding:2rem 1rem}
         .succes h3{color:var(--vert);font-size:1.5rem;margin-bottom:1rem}
         .erreur{background:#FFEBEE;border-left:4px solid var(--rouge);padding:1rem 1.5rem;border-radius:0 8px 8px 0;margin-bottom:1.5rem;color:var(--rouge)}
@@ -63,7 +71,6 @@
 </footer>
 
 <script>
-// Vérification connexion
 const eleve = JSON.parse(sessionStorage.getItem('eleveConnecte'));
 const conteneur = document.querySelector('.container');
 
@@ -127,7 +134,7 @@ if (!eleve) {
                         <label>Comment voulez-vous déposer votre travail ?</label>
                         <div class="choix-mode">
                             <div class="choix actif" data-mode="texte">✏️ Texte direct</div>
-                            <div class="choix" data-mode="fichier">📁 Fichier à envoyer</div>
+                            <div class="choix" data-mode="fichier">📁 Envoyer un fichier</div>
                         </div>
                     </div>
 
@@ -145,10 +152,18 @@ if (!eleve) {
 
                     <div class="zone-fichier zone-cachée" id="zoneFichier">
                         <div class="form-groupe">
-                            <label for="fichierTravail">Choisissez votre fichier *</label>
-                            <input type="file" id="fichierTravail" accept=".pdf,.doc,.docx,.txt,.odt,.jpg,.png">
-                            <p style="margin-top:.5rem;font-size:.9rem;color:var(--gris)">Formats acceptés : PDF, Word, Texte, Image (.jpg/.png)</p>
-                            <p id="nomFichierSelectionne" class="nom-fichier"></p>
+                            <label>Sélectionnez votre fichier *</label>
+                            <!-- Zone d'aperçu identique à la photo de la carte d'adhésion -->
+                            <div class="zone-fichier-apercu" id="zoneApercu">
+                                <input type="file" id="fichierTravail" accept=".pdf,.doc,.docx,.txt,.odt,.jpg,.jpeg,.png" style="display:none">
+                                <div class="icone-televersement" id="iconeDefaut">📁</div>
+                                <p id="texteDefaut">Cliquez pour choisir votre fichier<br><small>PDF, Word, Texte ou Image (.jpg/.png)</small></p>
+                                <div id="apercuFichier" style="display:none">
+                                    <div class="icone-televersement" id="iconeType">📄</div>
+                                    <p class="nom-fichier-selectionne" id="nomFichierAffiche"></p>
+                                    <img id="apercuImage" class="apercu-image" style="display:none" alt="Aperçu">
+                                </div>
+                            </div>
                         </div>
                     </div>
 
@@ -160,7 +175,7 @@ if (!eleve) {
                         <h3>🎉 Envoyé !</h3>
                         <p>Votre devoir a bien été enregistré.</p>
                         <p style="margin:.5rem 0">Titre : <strong id="afficherNom"></strong></p>
-                        <p id="afficherFichier"></p>
+                        <p id="afficherDetail"></p>
                         <p>Date : ${new Date().toLocaleDateString('fr-FR')}</p>
                         <a href="agenda.html" class="bouton sec">Retour à l'agenda</a>
                     </div>
@@ -168,7 +183,7 @@ if (!eleve) {
             </div>
         `;
 
-        // Changement de mode : Texte ou Fichier
+        // --- Gestion du mode Texte / Fichier ---
         const choix = document.querySelectorAll('.choix');
         choix.forEach(bouton => {
             bouton.addEventListener('click', () => {
@@ -180,13 +195,56 @@ if (!eleve) {
             });
         });
 
-        // Afficher nom du fichier sélectionné
-        document.getElementById('fichierTravail').addEventListener('change', function(e) {
-            const nom = e.target.files[0]?.name;
-            document.getElementById('nomFichierSelectionne').textContent = nom ? `✅ Fichier sélectionné : ${nom}` : '';
+        // --- Zone clic pour sélectionner le fichier ---
+        const zoneApercu = document.getElementById('zoneApercu');
+        zoneApercu.addEventListener('click', () => {
+            document.getElementById('fichierTravail').click();
         });
 
-        // Soumission du formulaire
+        // --- Affichage aperçu comme à l'inscription ---
+        document.getElementById('fichierTravail').addEventListener('change', function(e) {
+            const fichier = e.target.files[0];
+            if (!fichier) {
+                zoneApercu.classList.remove('selectionne');
+                document.getElementById('iconeDefaut').style.display = 'block';
+                document.getElementById('texteDefaut').style.display = 'block';
+                document.getElementById('apercuFichier').style.display = 'none';
+                return;
+            }
+
+            zoneApercu.classList.add('selectionne');
+            document.getElementById('iconeDefaut').style.display = 'none';
+            document.getElementById('texteDefaut').style.display = 'none';
+            
+            document.getElementById('apercuFichier').style.display = 'block';
+            document.getElementById('nomFichierAffiche').textContent = fichier.name;
+
+            // Icône selon le type de fichier
+            const ext = fichier.name.split('.').pop().toLowerCase();
+            const iconeType = document.getElementById('iconeType');
+            if (['jpg','jpeg','png','gif'].includes(ext)) {
+                iconeType.textContent = '🖼️';
+                // Aperçu de l'image comme à l'inscription
+                const lecteur = new FileReader();
+                lecteur.onload = function(ev) {
+                    const img = document.getElementById('apercuImage');
+                    img.src = ev.target.result;
+                    img.style.display = 'block';
+                };
+                lecteur.readAsDataURL(fichier);
+            } else if (ext === 'pdf') {
+                iconeType.textContent = '📕';
+                document.getElementById('apercuImage').style.display = 'none';
+            } else if (['doc','docx','odt'].includes(ext)) {
+                iconeType.textContent = '📝';
+                document.getElementById('apercuImage').style.display = 'none';
+            } else {
+                iconeType.textContent = '📄';
+                document.getElementById('apercuImage').style.display = 'none';
+            }
+        });
+
+        // --- Soumission ---
         document.getElementById('formDepot').addEventListener('submit', function(e) {
             e.preventDefault();
             const mode = document.querySelector('.choix.actif').dataset.mode;
@@ -196,40 +254,4 @@ if (!eleve) {
                 const contenu = document.getElementById('contenuTravail').value.trim();
                 if (!contenu) { alert("Veuillez écrire ou coller votre travail."); return; }
                 rendus.push({
-                    idDevoir, nomTravail, type: 'texte', contenu,
-                    dateRendu: new Date().toLocaleDateString('fr-FR')
-                });
-                document.getElementById('afficherFichier').textContent = "Mode : Texte direct";
-            } else {
-                const fichier = document.getElementById('fichierTravail').files[0];
-                if (!fichier) { alert("Veuillez choisir un fichier."); return; }
-                const lecteur = new FileReader();
-                lecteur.onload = function(ev) {
-                    rendus.push({
-                        idDevoir, nomTravail, type: 'fichier',
-                        nomFichier: fichier.name, taille: fichier.size,
-                        contenuBase64: ev.target.result,
-                        dateRendu: new Date().toLocaleDateString('fr-FR')
-                    });
-                    localStorage.setItem(cleRendus, JSON.stringify(rendus));
-                    afficherSucces();
-                };
-                lecteur.readAsDataURL(fichier);
-                return;
-            }
-
-            localStorage.setItem(cleRendus, JSON.stringify(rendus));
-            afficherSucces();
-        });
-
-        function afficherSucces() {
-            document.getElementById('formDepot').style.display = 'none';
-            document.getElementById('afficherNom').textContent = document.getElementById('nomTravail').value;
-            document.getElementById('blocSucces').classList.add('visible');
-        }
-    }
-}
-</script>
-
-</body>
-</html>
+                    idDevoir, nomTravail, type: 'texte', contenu
