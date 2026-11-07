@@ -222,7 +222,7 @@ function chargerInterface() {
         listeDevoirs.push(nouveau);
         localStorage.setItem('devoirs', JSON.stringify(listeDevoirs));
 
-        ajouterJournal(`Devoir créé : « ${titre} »`);
+        ajouterJournal(`Devoir créé : « ${titre} » — Limite : ${new Date(dateLimite).toLocaleDateString('fr-FR')}`);
 
         document.getElementById('formAjoutDevoir').reset();
         const msg = document.getElementById('msgAjout');
@@ -231,8 +231,8 @@ function chargerInterface() {
     });
 
     if (estAdmin) {
-        document.getElementById('viderJournal')?.addEventListener('click', () => {
-            if (confirm('Effacer tout le journal ?')) {
+        document.getElementById('viderJournal').addEventListener('click', () => {
+            if (confirm('⚠️ Effacer tout l\'historique ? Cette action est définitive.')) {
                 localStorage.setItem(cleJournal, '[]');
                 ajouterJournal('Journal vidé par administrateur');
                 afficherJournal();
@@ -289,5 +289,4 @@ function afficherSuivi() {
                             <td>${devoir.titre}</td>
                             <td>${r.loginEleve}</td>
                             <td>${r.nomTravail || '-'}</td>
-                            <td>${r.type === 'texte' ? 'Texte' : 'Fichier'}</td>
-                            <td>${r.date
+                            <td>${r.type === 'texte' ? 'Texte'
