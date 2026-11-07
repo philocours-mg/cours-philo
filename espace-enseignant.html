@@ -75,6 +75,7 @@
     </style>
 </head>
 <body>
+
 <header>
     <div class="header-contenu">
         <div class="fil-ariane">
@@ -85,19 +86,24 @@
         <div class="identifiant" id="zoneIdentifiant"></div>
     </div>
 </header>
+
 <div class="container" id="contenuPrincipal">
     <p style="text-align:center;color:var(--gris-600);padding:2rem">Chargement en cours...</p>
 </div>
+
 <footer>
     <p>© 2026 — Cours de Philosophie · Mananjary · Madagascar</p>
 </footer>
+
 <script>
 const ENSEIGNANT = { login:'prof', mdp:'prof123', nom:'Enseignant' };
 const ADMIN = { login:'admin', mdp:'451748', nom:'Administrateur' };
 const cleJournal = 'journalActivites';
+
 const utilisateurActuel = sessionStorage.getItem('enseignantConnecte');
 const zoneIdentifiant = document.getElementById('zoneIdentifiant');
 const conteneur = document.getElementById('contenuPrincipal');
+
 if (!utilisateurActuel) {
     conteneur.innerHTML = `
         <div class="carte" style="max-width:460px;margin:2rem auto">
@@ -131,6 +137,7 @@ if (!utilisateurActuel) {
 } else {
     chargerInterface();
 }
+
 function chargerInterface() {
     const estAdmin = sessionStorage.getItem('enseignantConnecte') === 'admin';
     zoneIdentifiant.innerHTML = `
@@ -141,12 +148,14 @@ function chargerInterface() {
         sessionStorage.removeItem('enseignantConnecte');
         location.reload();
     });
+
     conteneur.innerHTML = `
         <div class="onglets">
             <button class="onglet actif" data-onglet="ajouter">➕ Ajouter un devoir</button>
             <button class="onglet" data-onglet="suivi">📋 Suivi des rendus</button>
             <button class="onglet" data-onglet="journal">📖 Journal des activités</button>
         </div>
+
         <div class="contenu-onglet visible" id="ajouter">
             <div class="carte">
                 <h2>📝 Créer un nouveau devoir</h2>
