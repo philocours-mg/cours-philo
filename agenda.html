@@ -30,25 +30,26 @@
         .statut.rendu{background:#E8F5E9;color:var(--vert)}
         .statut.en-retard{background:#FFEBEE;color:var(--rouge)}
         .statut.a-venir{background:#FFF3E0;color:var(--orange)}
-        .devoir-contenu{margin:1rem 0}
+        .devoir-contenu{margin:1rem 0;white-space:pre-line}
         .date-limite{font-size:.9rem;color:var(--gris);margin-top:.5rem}
-        .temps-restant{font-weight:bold;margin-top:.3rem}
+        .temps-restant{font-weight:bold;margin-top:.5rem}
         .temps-restant.vert{color:var(--vert)}
         .temps-restant.orange{color:var(--orange)}
         .temps-restant.rouge{color:var(--rouge)}
-        .bouton{display:inline-block;padding:.8rem 2rem;border-radius:6px;text-decoration:none;font-weight:bold;transition:.3s;border:none;cursor:pointer;margin-top:.8rem}
-        .bouton.prim{background:var(--bleu);color:white}
-        .bouton.prim:hover{background:#0D47A1}
+        .bouton{display:inline-block;padding:.8rem 2rem;border-radius:6px;text-decoration:none;font-weight:bold;transition:.3s;border:none;cursor:pointer;margin-top:.8rem;font-size:1rem}
         .bouton.vert{background:var(--vert);color:white}
         .bouton.vert:hover{background:#276F29}
+        .bouton.sec{background:var(--bleu);color:white;margin-bottom:1.5rem;display:inline-block}
         .alerte{background:#FFF3E0;border-left:4px solid var(--orange);padding:1rem 1.5rem;border-radius:0 8px 8px 0;margin:1.5rem 0}
         .alerte.rouge{background:#FFEBEE;border-color:var(--rouge)}
         .form-groupe{margin-bottom:1.2rem}
         label{display:block;font-weight:600;margin-bottom:.4rem}
-        input, textarea, select{width:100%;padding:.9rem;border:1px solid var(--bordure);border-radius:8px;font-size:1rem}
+        input, textarea{width:100%;padding:.9rem;border:1px solid var(--bordure);border-radius:8px;font-size:1rem}
+        textarea{min-height:150px;resize:vertical}
         input:focus, textarea:focus{outline:none;border-color:var(--bleu);box-shadow:0 0 0 3px rgba(21,101,192,.15)}
-        .succes{background:#E8F5E9;border-left:4px solid var(--vert);padding:1rem 1.5rem;border-radius:0 8px 8px 0;margin-top:1.5rem;display:none}
+        .succes{background:#E8F5E9;border-left:4px solid var(--vert);padding:1.5rem;border-radius:0 8px 8px 0;margin-top:1.5rem;display:none}
         footer{background:#222;color:#aaa;text-align:center;padding:2rem 1rem;margin-top:3rem;font-size:.9rem}
+        .vide{text-align:center;color:var(--gris);padding:3rem 1rem}
     </style>
 </head>
 <body>
@@ -63,7 +64,7 @@
 </header>
 
 <div class="container" id="contenu">
-    <p id="msgChargement">Chargement...</p>
+    <p>Chargement...</p>
 </div>
 
 <footer>
@@ -77,14 +78,18 @@ const eleve = JSON.parse(sessionStorage.getItem('eleveConnecte'));
 const conteneur = document.getElementById('contenu');
 
 if (!eleve) {
-    conteneur.innerHTML = '<div style="text-align:center;padding:4rem"><h2>🔒 Accès réservé</h2><p>Connectez-vous d\'abord.</p><a href="connexion.html" style="display:inline-block;margin-top:1rem;padding:.8rem 2rem;background:#1565C0;color:white;border-radius:6px;text-decoration:none">Se connecter</a></div>';
+    conteneur.innerHTML = `<div style="text-align:center;padding:4rem">
+        <h2>🔒 Accès réservé</h2>
+        <p>Vous devez vous connecter d'abord.</p>
+        <a href="connexion.html" style="display:inline-block;margin-top:1rem;padding:.8rem 2rem;background:#1565C0;color:white;border-radius:6px;text-decoration:none">Se connecter</a>
+    </div>`;
 } else {
     // Base des devoirs
     let listeDevoirs = JSON.parse(localStorage.getItem('devoirs') || JSON.stringify([
         {
             id: 1,
             titre: "La Vérité — Dissertation",
-            consigne: "Sujet : « Est-ce que la vérité existe ? »\nVous développerez une argumentation structurée en 3 parties. Vous vous appuierez sur les auteurs étudiés dans la fiche de cours.",
+            consigne: "Sujet : « Est-ce que la vérité existe ? »\nDéveloppez une argumentation structurée en 3 parties. Appuyez-vous sur les auteurs étudiés dans la fiche de cours.",
             datePublication: "2026-09-08",
             dateLimite: "2026-09-11",
             concerne: "tous",
@@ -111,114 +116,115 @@ if (!eleve) {
     ]));
 
     // Récupération des rendus de l'élève
-    let rendusEleve = JSON.parse(localStorage.getItem('rendus_' + eleve.login) || '[]');
+    const cleRendus = 'rendus_' + eleve.login;
+    let rendusEleve = JSON.parse(localStorage.getItem(cleRendus) || '[]');
 
-    // Calcul du temps restant
+    // Calcul temps restant
     function calculerTemps(dateLimiteStr) {
         const maintenant = new Date();
         const limite = new Date(dateLimiteStr.split('/').reverse().join('-'));
         const diff = limite - maintenant;
-        if (diff < 0) return { valeur: -1, texte: "En retard !", classe: "rouge" };
+        if (diff < 0) return { valeur: -1, texte: "Délai dépassé", classe: "rouge" };
         const jours = Math.floor(diff / (1000 * 60 * 60 * 24));
         const heures = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-        let texte = "";
-        if (jours > 0) texte += jours + " jour" + (jours > 1 ? "s" : "");
-        if (heures > 0) texte += " " + heures + " heure" + (heures > 1 ? "s" : "");
-        return { 
-            valeur: diff, 
-            texte: texte || "Moins d'une heure", 
-            classe: jours <= 1 ? "orange" : "vert" 
-        };
+        let texte = jours > 0 ? jours + " jour" + (jours > 1 ? "s" : "") : "";
+        if (heures > 0) texte += (texte ? " " : "") + heures + " heure" + (heures > 1 ? "s" : "");
+        return { valeur: diff, texte: texte || "Moins d'une heure", classe: jours <= 1 ? "orange" : "vert" };
     }
 
-    // Rendu HTML d'un devoir
-    function creerCarteDevoir(dev) {
+    // Mise à jour avertissement si devoir en retard non rendu
+    function verifierRetard(dev) {
         const rendu = rendusEleve.find(r => r.idDevoir === dev.id);
+        if (rendu) return false;
         const temps = calculerTemps(dev.dateLimite);
-        const estEnRetard = temps.valeur < 0 && !rendu;
-        
-        let statutClasse = "", statutTexte = "";
-        if (rendu) {
-            statutClasse = "rendu";
-            statutTexte = "✅ Rendu le " + rendu.dateRendu;
-        } else if (estEnRetard) {
-            statutClasse = "en-retard";
-            statutTexte = "❌ En retard";
-        } else if (dev.statut === "a-venir") {
-            statutClasse = "a-venir";
-            statutTexte = "⏳ À venir";
-        } else {
-            statutClasse = "attente";
-            statutTexte = "⏰ En cours";
-        }
-
-        // Mise à jour avertissement si retard non rendu
-        if (estEnRetard && dev.statut === "en-cours") {
-            const index = listeDevoirs.findIndex(d => d.id === dev.id);
-            if (index !== -1 && listeDevoirs[index].statut === "en-cours") {
-                listeDevoirs[index].statut = "non-rendu";
+        if (temps.valeur < 0 && dev.statut === "en-cours") {
+            const idx = listeDevoirs.findIndex(d => d.id === dev.id);
+            if (idx !== -1 && listeDevoirs[idx].statut === "en-cours") {
+                listeDevoirs[idx].statut = "non-rendu";
+                // Incrémentation avertissement
                 eleve.avertissements = (eleve.avertissements || 0) + 1;
-                localStorage.setItem('eleveConnecte', JSON.stringify(eleve));
+                sessionStorage.setItem('eleveConnecte', JSON.stringify(eleve));
                 let liste = JSON.parse(localStorage.getItem('listeEleves') || '[]');
                 const pos = liste.findIndex(e => e.login === eleve.login);
                 if (pos !== -1) {
                     liste[pos].avertissements = eleve.avertissements;
-                    // Exclusion définitive à 3
-                    if (liste[pos].avertissements >= 3) {
-                        liste[pos].statut = "exclu";
-                    }
+                    if (liste[pos].avertissements >= 3) liste[pos].statut = "exclu";
                     localStorage.setItem('listeEleves', JSON.stringify(liste));
                 }
+                localStorage.setItem('devoirs', JSON.stringify(listeDevoirs));
+                return true;
             }
         }
+        return false;
+    }
 
-        const dateLimite = new Date(dev.dateLimite.split('/').reverse().join('-'));
+    // Carte d'un devoir
+    function creerCarte(dev) {
+        rendusEleve = JSON.parse(localStorage.getItem(cleRendus) || '[]');
+        const rendu = rendusEleve.find(r => r.idDevoir === dev.id);
+        const temps = calculerTemps(dev.dateLimite);
+        const estRetard = temps.valeur < 0 && !rendu;
+        
+        let statutTexte = "", statutClasse = "";
+        if (rendu) {
+            statutTexte = "✅ Rendu le " + rendu.dateRendu;
+            statutClasse = "rendu";
+        } else if (estRetard) {
+            statutTexte = "❌ En retard";
+            statutClasse = "en-retard";
+        } else if (dev.statut === "a-venir") {
+            statutTexte = "⏳ À venir";
+            statutClasse = "a-venir";
+        } else {
+            statutTexte = "⏰ En cours";
+            statutClasse = "attente";
+        }
+
         const datePub = new Date(dev.datePublication.split('/').reverse().join('-'));
+        const dateLimite = new Date(dev.dateLimite.split('/').reverse().join('-'));
         const aujourdhui = new Date();
         const estDisponible = aujourdhui >= datePub;
 
         return `
-            <div class="devoir ${statutClasse === 'en-retard' ? 'en-retard' : ''} ${dev.statut === 'a-venir' ? 'a-venir' : ''}">
+            <div class="devoir ${estRetard ? 'en-retard' : ''} ${dev.statut === 'a-venir' ? 'a-venir' : ''}">
                 <div class="devoir-entete">
                     <span class="devoir-titre">${dev.titre}</span>
                     <span class="statut ${statutClasse}">${statutTexte}</span>
                 </div>
                 <div class="devoir-contenu">
-                    <p style="white-space:pre-line">${estDisponible ? dev.consigne : "🔒 Disponible à partir du " + datePub.toLocaleDateString('fr-FR')}</p>
+                    ${estDisponible ? dev.consigne : "🔒 Disponible à partir du " + datePub.toLocaleDateString('fr-FR')}
                 </div>
                 <p class="date-limite">📅 Date limite : ${dateLimite.toLocaleDateString('fr-FR')}</p>
                 ${estDisponible && !rendu && dev.statut !== 'corrige' ? `
                     <p class="temps-restant ${temps.classe}">${temps.valeur >= 0 ? "⏱️ Temps restant : " + temps.texte : "⚠️ Délai dépassé"}</p>
-                    ${temps.valeur >= 0 ? `
-                        <button class="bouton vert" onclick="ouvrirFormulaire(${dev.id}, '${dev.titre.replace(/'/g, "\\'")}')">✍️ Déposer mon travail</button>
-                    ` : ''}
-                ` : ''}
-                ${rendu ? `<p style="color:var(--vert);margin-top:.5rem">📎 Fichier / texte envoyé : <strong>${rendu.nomFichier || rendu.texteDepose.substring(0,40)}...</strong></p>` : ''}
-                ${dev.statut === 'corrige' ? `<p style="color:var(--vert);margin-top:.5rem">✅ Corrigé — Note : <strong>${dev.note || "En attente"}</strong></p>` : ''}
+                    ${temps.valeur >= 0 ? `<button class="bouton vert" onclick="ouvrirDepot(${dev.id}, '${dev.titre.replace(/'/g, "\\'")}')">✍️ Déposer mon travail</button>` : ""}
+                ` : ""}
+                ${rendu ? `<p style="margin-top:.8rem;color:var(--vert)">📎 Fichier/Texte : <strong>${rendu.nomFichier || rendu.texteDepose.substring(0,40)}...</strong></p>` : ""}
+                ${dev.statut === 'corrige' ? `<p style="margin-top:.8rem;color:var(--vert)">✅ Corrigé — Note : ${dev.note || "En attente"}</p>` : ""}
             </div>
         `;
     }
 
     // Formulaire de dépôt
-    window.ouvrirFormulaire = function(idDevoir, titreDevoir) {
+    window.ouvrirDepot = function(idDevoir, titre) {
         conteneur.innerHTML = `
-            <a href="agenda.html" style="display:inline-block;margin-bottom:1rem;color:var(--bleu);text-decoration:none">← Retour à l'agenda</a>
-            <h2>✍️ Déposer : ${titreDevoir}</h2>
+            <a href="agenda.html" class="bouton sec">← Retour à l'agenda</a>
+            <h2>✍️ Déposer : ${titre}</h2>
             <form id="formDepot">
                 <div class="form-groupe">
-                    <label>Nom du fichier ou titre de votre travail</label>
-                    <input type="text" id="nomFichier" placeholder="Exemple : RAKOTO_Marie_La_Verite.pdf" required>
+                    <label for="nomFichier">Nom du fichier ou titre de votre travail *</label>
+                    <input type="text" id="nomFichier" required placeholder="Ex: RAKOTO_Marie_La_Verite.pdf">
                 </div>
                 <div class="form-groupe">
-                    <label>Ou collez votre texte directement</label>
-                    <textarea id="texteTravail" rows="10" placeholder="Copiez votre dissertation ou votre réponse ici..."></textarea>
+                    <label for="texteTravail">Ou collez votre texte directement *</label>
+                    <textarea id="texteTravail" required placeholder="Copiez votre dissertation ou votre réponse ici..."></textarea>
                 </div>
                 <button type="submit" class="bouton vert">✅ Envoyer mon travail</button>
             </form>
             <div class="succes" id="msgSucces">
-                <strong>🎉 Travail envoyé !</strong><br>
-                Votre devoir a bien été enregistré. Vous recevrez la correction dans les meilleurs délais.<br>
-                <a href="agenda.html" style="color:inherit;font-weight:bold">Retour à l'agenda →</a>
+                <h3>🎉 Travail envoyé !</h3>
+                <p>Votre devoir a bien été enregistré. Vous recevrez la correction dans les meilleurs délais.</p>
+                <a href="agenda.html" class="bouton vert">Retour à l'agenda</a>
             </div>
         `;
 
@@ -227,13 +233,13 @@ if (!eleve) {
             const nouveauRendu = {
                 idDevoir: idDevoir,
                 nomFichier: document.getElementById('nomFichier').value,
-                texteDepose: document.getElementById('texteTravail').value || "(Fichier joint)",
+                texteDepose: document.getElementById('texteTravail').value,
                 dateRendu: new Date().toLocaleDateString('fr-FR')
             };
             rendusEleve.push(nouveauRendu);
-            localStorage.setItem('rendus_' + eleve.login, JSON.stringify(rendusEleve));
+            localStorage.setItem(cleRendus, JSON.stringify(rendusEleve));
             
-            // Mise à jour du statut du devoir
+            // Mise à jour statut du devoir
             const idx = listeDevoirs.findIndex(d => d.id === idDevoir);
             if (idx !== -1) listeDevoirs[idx].statut = "rendu";
             localStorage.setItem('devoirs', JSON.stringify(listeDevoirs));
@@ -245,8 +251,9 @@ if (!eleve) {
 
     // Affichage principal
     function afficherAgenda() {
-        const aujourdhui = new Date();
-        
+        // Vérification des retards
+        listeDevoirs.forEach(dev => verifierRetard(dev));
+
         conteneur.innerHTML = `
             ${eleve.avertissements >= 2 ? `
                 <div class="alerte ${eleve.avertissements >= 3 ? 'rouge' : ''}">
@@ -260,21 +267,14 @@ if (!eleve) {
             <div class="onglets">
                 <button class="onglet actif" data-vue="tous">📋 Tous</button>
                 <button class="onglet" data-vue="en-cours">⏰ En cours</button>
-                <button class="onglet" data-vue="corriges">✅ Corrigés</button>
+                <button class="onglet" data-vue="corriges">✅ Corrigés/Rendus</button>
             </div>
 
             <div class="vue visible" id="vue-tous">
-                ${listeDevoirs.map(d => creerCarteDevoir(d)).join('')}
+                ${listeDevoirs.map(d => creerCarte(d)).join('')}
             </div>
             <div class="vue" id="vue-en-cours">
-                ${listeDevoirs.filter(d => d.statut === 'en-cours').map(d => creerCarteDevoir(d)).join('') || '<p style="text-align:center;color:var(--gris);padding:2rem">Aucun devoir en cours ✅</p>'}
+                ${listeDevoirs.filter(d => d.statut === 'en-cours').map(d => creerCarte(d)).join('') || '<p class="vide">Aucun devoir en cours ✅</p>'}
             </div>
             <div class="vue" id="vue-corriges">
-                ${listeDevoirs.filter(d => d.statut === 'corrige' || d.statut === 'rendu').map(d => creerCarteDevoir(d)).join('') || '<p style="text-align:center;color:var(--gris);padding:2rem">Pas encore de devoir corrigé</p>'}
-            </div>
-        `;
-
-        // Gestion des onglets
-        document.querySelectorAll('.onglet').forEach(btn => {
-            btn.addEventListener('click', function() {
-                document.querySelectorAll('.onglet').forEach(b
+                ${listeDevoirs.filter(d => d.statut === 'corrige' || d.statut === 'rendu').map(d => creerCarte(d)).join('') || '<p class="vide">Pas encore de devoir corrigé ou rendu</
