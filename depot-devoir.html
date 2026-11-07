@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Déposer mon devoir — Cours de Philosophie</title>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',sans-serif}
+        :root{--bleu-fonce:#0D47A1;--bleu:#1565C0;--vert:#2E7D32;--orange:#E65100;--rouge:#D32F2F;--gris:#666;--fond:#FAFAFA;--texte:#333;--bordure:#E0E0E0}
+        body{background:var(--fond);color:var(--texte);line-height:1.6}
+        header{background:linear-gradient(135deg,#0D47A1,#1565C0);color:white;padding:1.5rem 1rem}
+        .header-contenu{max-width:700px;margin:0 auto}
+        .retour{color:white;text-decoration:none;opacity:.9;display:inline-block;margin-bottom:.5rem}
+        .retour:hover{text-decoration:underline}
+        .container{max-width:700px;margin:0 auto;padding:2rem 1rem}
+        .carte{background:white;border-radius:12px;box-shadow:0 3px 10px rgba(0,0,0,.08);padding:2rem}
+        h2{color:var(--bleu);margin-bottom:1.5rem;text-align:center}
+        .info-devoir{background:#E3F2FD;border-left:4px solid var(--bleu);padding:1rem 1.5rem;border-radius:0 8px 8px 0;margin-bottom:1.5rem}
+        .info-devoir h3{color:var(--bleu);margin-bottom:.5rem}
+        .date-limite{font-size:.9rem;color:var(--gris);margin-top:.5rem}
+        .temps-restant{font-weight:bold;margin-top:.5rem}
+        .temps-restant.vert{color:var(--vert)}
+        .temps-restant.orange{color:var(--orange)}
+        .temps-restant.rouge{color:var(--rouge)}
+        .form-groupe{margin-bottom:1.2rem}
+        label{display:block;font-weight:600;margin-bottom:.4rem}
+        input[type="text"], textarea{width:100%;padding:.9rem;border:1px solid var(--bordure);border-radius:8px;font-size:1rem}
+        textarea{min-height:200px;resize:vertical}
+        input:focus, textarea:focus{outline:none;border-color:var(--bleu);box-shadow:0 0 0 3px rgba(21,101,192,.15)}
+        .bouton{display:inline-block;padding:.9rem 2rem;border-radius:8px;text-decoration:none;font-weight:bold;transition:.3s;border:none;cursor:pointer;font-size:1rem;width:100%}
+        .bouton.vert{background:var(--vert);color:white}
+        .bouton.vert:hover{background:#276F29}
+        .bouton.sec{background:var(--bleu);color:white;margin-top:1rem;text-align:center}
+        .masque{display:none}
+        .succes{text-align:center;padding:2rem 1rem}
+        .succes h3{color:var(--vert);font-size:1.5rem;margin-bottom:1rem}
+        .erreur{background:#FFEBEE;border-left:4px solid var(--rouge);padding:1rem 1.5rem;border-radius:0 8px 8px 0;margin-bottom:1.5rem;color:var(--rouge)}
+        footer{background:#222;color:#aaa;text-align:center;padding:2rem 1rem;margin-top:3rem;font-size:.9rem}
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="header-contenu">
+        <a href="agenda.html" class="retour">← Retour à l'agenda</a>
+        <h1>✍️ Déposer mon devoir</h1>
+    </div>
+</header>
+
+<div class="container">
+    <div id="chargement">Chargement...</div>
+</div>
+
+<footer>
+    <p>© 2026 — Cours de Philosophie. Mananjary — Madagascar</p>
+    <p>📧 rnj2618@gmail.com | 📱 +261 38 552 8349</p>
+</footer>
+
+<script>
+// Vérification connexion
+const eleve = JSON.parse(sessionStorage.getItem('eleveConnecte'));
+const conteneur = document.querySelector('.container');
+
+if (!eleve) {
+    conteneur.innerHTML = `
+        <div class="carte">
+            <div class="erreur">🔒 Accès réservé</div>
+            <p>Vous devez être connecté pour déposer un devoir.</p>
+            <a href="connexion.html" class="bouton sec">Aller à la connexion</a>
+        </div>
+    `;
+} else {
+    // Récupération de l'ID du devoir dans l'URL
+    const params = new URLSearchParams(window.location.search);
+    const idDevoir = parseInt(params.get('id'));
+
+    // Liste des devoirs
+    const listeDevoirs = JSON.parse(localStorage.getItem('devoirs') || JSON.stringify([
+        {
+            id: 1,
+            titre: "La Vérité — Dissertation",
+            consigne: "Sujet : « Est-ce que la vérité existe ? »\nDéveloppez une argumentation structurée en 3 parties. Appuyez-vous sur les auteurs étudiés dans la fiche de cours.",
+            dateLimite: "2026-09-11"
+        },
+        {
+            id: 2,
+            titre: "La Liberté — Question de texte",
+            consigne: "Commentaire du texte de Sartre : « L'existence précède l'essence ». Montrez en quoi cette affirmation signifie que l'homme est libre.",
+            dateLimite: "2026-09-18"
+        },
+        {
+            id: 3,
+            titre: "Le Devoir — Exercice",
+            consigne: "Définissez le devoir selon Kant et expliquez pourquoi il est « pur ».",
+            dateLimite: "2026-09-04"
+        }
+    ]));
+
+    // Trouver le devoir
+    const devoir = listeDevoirs.find(d => d.id === idDevoir);
+
+    if (!devoir) {
+        conteneur.innerHTML = `
+            <div class="carte">
+                <div class="erreur">❌ Devoir introuvable</div>
+                <p>Ce devoir n'existe pas ou a été supprimé.</p>
+                <a href="agenda.html" class="bouton sec">Retour à l'agenda</a>
+            </div>
+        `;
+    } else {
+        // Vérifier si déjà rendu
+        const cleRendus = 'rendus_' + eleve.login;
+        const rendus = JSON.parse(localStorage.getItem(cleRendus) || '[]');
+        const dejaRendu = rendus.find(r => r.idDevoir === idDevoir);
+
+        // Calcul temps restant
+        function calculerTemps(dateLimiteStr) {
+            const maintenant = new Date();
+            const limite = new Date(dateLimiteStr);
+            const diff = limite - maintenant;
+            if (diff < 0) return { valeur: -1, texte: "Délai dépassé", classe: "rouge" };
+            const jours = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const heures = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            let texte = jours > 0 ? jours + " jour" + (jours > 1 ? "s" : "") : "";
+            if (heures > 0) texte += (texte ? " " : "") + heures + " heure" + (heures > 1 ? "s" : "");
+            return { valeur: diff, texte: texte || "Moins d'une heure", classe: jours <= 1 ? "orange" : "vert" };
+        }
+
+        const temps = calculerTemps(devoir.dateLimite);
+        const dateLimiteAffichage = new Date(devoir.dateLimite).toLocaleDateString('fr-FR');
+
+        if (dejaRendu) {
+            conteneur.innerHTML = `
+                <div class="carte">
+                    <h2>✅ Déjà déposé</h2>
+                    <p>Vous avez déjà déposé un travail pour :</p>
+                    <p style="font-weight:bold;margin:1rem 0;font-size:1.1rem">${devoir.titre}</p>
+                    <p>Envoyé le ${dejaRendu.dateRendu}</p>
+                    <a href="agenda.html" class="bouton sec">Retour à l'agenda</a>
+                </div>
+            `;
+        } else if (temps.valeur < 0) {
+            conteneur.innerHTML = `
+                <div class="carte">
+                    <div class="erreur">⏱️ Délai dépassé</div>
+                    <p>La date limite pour rendre <strong>${devoir.titre}</strong> était le ${dateLimiteAffichage}.</p>
+                    <p>Votre dépôt ne peut plus être accepté.</p>
+                    <a href="agenda.html" class="bouton sec">Retour à l'agenda</a>
+                </div>
+            `;
+        } else {
+            // Formulaire de dépôt
+            conteneur.innerHTML = `
+                <div class="carte">
+                    <h2>✍️ ${devoir.titre}</h2>
+                    
+                    <div class="info-devoir">
+                        <h3>Consigne</h3>
+                        <p style="white-space:pre-line">${devoir.consigne}</p>
+                        <p class="date-limite">📅 Date limite : ${dateLimiteAffichage}</p>
+                        <p class="temps-restant ${temps.classe}">⏱️ Temps restant : ${temps.texte}</p>
+                    </div>
+
+                    <form id="formDepot">
+                        <div class="form-groupe">
+                            <label for="nomTravail">Titre / Nom du fichier *</label>
+                            <input type="text" id="nomTravail" required 
+                                   placeholder="Ex: RAKOTO_Marie_La_Verite">
+                        </div>
+                        
+                        <div class="form-groupe">
+                            <label for="contenuTravail">Votre travail (texte complet) *</label>
+                            <textarea id="contenuTravail" required 
+                                      placeholder="Collez votre dissertation ou votre réponse ici..."></textarea>
+                        </div>
+
+                        <button type="submit" class="bouton vert">✅ Envoyer mon travail</button>
+                    </form>
+
+                    <div id="blocSucces" class="masque">
+                        <div class="succes">
+                            <h3>🎉 Envoyé !</h3>
+                            <p>Votre devoir a bien été enregistré.</p>
+                            <p style="margin:.5rem 0">Titre : <strong id="afficherNom"></strong></p>
+                            <p>Date : ${new Date().toLocaleDateString('fr-FR')}</p>
+                            <a href="agenda.html" class="bouton sec">Retour à l'agenda</a>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            // Soumission
+            document.getElementById('formDepot').addEventListener('submit', function(e) {
+                e.preventDefault();
+
+                const nouveauRendu = {
+                    idDevoir: idDevoir,
+                    nomTravail: document.getElementById('nomTravail').value.trim(),
+                    contenu: document.getElementById('contenuTravail').value.trim(),
+                    dateRendu: new Date().toLocaleDateString('fr-FR')
+                };
+
+                // Enregistrement
+                rendus.push(nouveauRendu);
+                localStorage.setItem(cleRendus, JSON.stringify(rendus));
+
+                // Affichage succès
+                document.getElementById('formDepot').style.display = 'none';
+                document.getElementById('afficherNom').textContent = nouveauRendu.nomTravail;
+                document.getElementById('blocSucces').classList.remove('masque');
+            });
+        }
+    }
+}
+</script>
+
+</body>
+</html>
