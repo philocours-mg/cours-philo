@@ -5,92 +5,114 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Espace Enseignant — Cours de Philosophie</title>
     <style>
-        *{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',sans-serif}
-        :root{--bleu-fonce:#0D47A1;--bleu:#1565C0;--vert:#2E7D32;--orange:#E65100;--rouge:#D32F2F;--gris:#666;--fond:#FAFAFA;--texte:#333;--bordure:#E0E0E0}
-        body{background:var(--fond);color:var(--texte);line-height:1.6}
-        header{background:linear-gradient(135deg,#0D47A1,#1565C0);color:white;padding:1.5rem 1rem}
+        *{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI', 'Roboto', sans-serif}
+        :root{
+            --primaire:#1a56db;
+            --primaire-clair:#e8f0fe;
+            --primaire-fonce:#0f3fa8;
+            --succes:#0e9f6e;
+            --succes-clair:#f0fdf4;
+            --attention:#d97706;
+            --attention-clair:#fffbeb;
+            --erreur:#dc2626;
+            --erreur-clair:#fef2f2;
+            --gris-50:#f9fafb;
+            --gris-100:#f3f4f6;
+            --gris-200:#e5e7eb;
+            --gris-600:#4b5563;
+            --gris-700:#374151;
+            --ombre-souple:0 10px 25px -5px rgba(26, 86, 219, 0.08), 0 8px 10px -6px rgba(26, 86, 219, 0.05);
+            --ombre-legere:0 2px 8px rgba(0,0,0,0.04);
+        }
+        body{background:linear-gradient(135deg,#f0f4fa 0%,#e6eef9 100%);min-height:100vh;color:var(--gris-700);line-height:1.6}
+        header{background:linear-gradient(135deg,#1a56db 0%,#2563eb 100%);color:white;padding:2rem 1rem 3rem;border-radius:0 0 2.5rem 2.5rem;box-shadow:var(--ombre-souple)}
         .header-contenu{max-width:800px;margin:0 auto}
-        .retour{color:white;text-decoration:none;opacity:.9;display:inline-block;margin-bottom:.5rem}
-        .retour:hover{text-decoration:underline}
-        .container{max-width:800px;margin:0 auto;padding:2rem 1rem}
+        .fil-ariane{margin-bottom:1rem}
+        .lien-retour{color:rgba(255,255,255,0.9);text-decoration:none;display:inline-flex;align-items:center;gap:.4rem;font-weight:500;transition:transform .2s}
+        .lien-retour:hover{transform:translateX(-3px)}
+        h1{font-size:1.8rem;margin-bottom:.5rem}
+        .sous-titre{opacity:.95;font-weight:300;margin-bottom:1.5rem}
+        .identifiant{display:flex;align-items:center;gap:.8rem;background:rgba(255,255,255,.18);padding:.6rem 1rem;border-radius:50px;margin-top:-3.5rem;justify-content:flex-end}
+        .deco{background:rgba(255,255,255,.25);color:white;border:none;padding:.4rem .9rem;border-radius:50px;cursor:pointer;font-weight:600;transition:all .2s}
+        .deco:hover{background:rgba(255,255,255,.4)}
+        .container{max-width:800px;margin:-1rem auto 3rem;padding:0 1rem}
         .onglets{display:flex;gap:.5rem;margin-bottom:1.5rem;flex-wrap:wrap}
-        .onglet{padding:.8rem 1.2rem;background:#eee;border:none;border-radius:8px;cursor:pointer;font-weight:600;transition:.2s}
-        .onglet.actif{background:var(--bleu);color:white}
-        .contenu-onglet{display:none}
+        .onglet{padding:.85rem 1.4rem;background:white;border:none;border-radius:.9rem;cursor:pointer;font-weight:600;transition:all .3s;color:var(--gris-600);box-shadow:var(--ombre-legere)}
+        .onglet:hover{transform:translateY(-2px)}
+        .onglet.actif{background:linear-gradient(135deg,var(--primaire),var(--primaire-fonce));color:white;box-shadow:0 4px 12px rgba(26,86,219,0.2)}
+        .contenu-onglet{display:none;animation:fadeIn .4s ease forwards}
         .contenu-onglet.visible{display:block}
-        .carte{background:white;border-radius:12px;box-shadow:0 3px 10px rgba(0,0,0,.08);padding:1.5rem;margin-bottom:1.2rem}
-        h2{color:var(--bleu);margin-bottom:1.2rem}
-        h3{color:var(--texte);margin-bottom:.8rem}
-        .form-groupe{margin-bottom:1.2rem}
-        label{display:block;font-weight:600;margin-bottom:.5rem}
-        input[type="text"],input[type="date"],textarea{width:100%;padding:.85rem;border:1px solid var(--bordure);border-radius:8px;font-size:1rem}
-        textarea{min-height:120px;resize:vertical}
-        button{padding:.85rem 1.5rem;border:none;border-radius:8px;font-weight:bold;cursor:pointer;font-size:1rem;transition:.2s}
-        .btn-primaire{background:var(--bleu);color:white}
-        .btn-primaire:hover{background:var(--bleu-fonce)}
-        .btn-vert{background:var(--vert);color:white}
-        .btn-rouge{background:var(--rouge);color:white}
-        table{width:100%;border-collapse:collapse;margin-top:1rem}
-        th,td{padding:.8rem;text-align:left;border-bottom:1px solid var(--bordure)}
-        th{background:#f5f5f5;font-weight:bold}
-        .statut-rendu{padding:.25rem .6rem;border-radius:20px;font-size:.85rem;font-weight:bold}
-        .rendu{background:#E8F5E9;color:var(--vert)}
-        .en-attente{background:#FFF3E0;color:var(--orange)}
-        .en-retard{background:#FFEBEE;color:var(--rouge)}
-        .ligne-journal{padding:.8rem 0;border-bottom:1px solid var(--bordure)}
-        .date-journal{font-size:.85rem;color:var(--gris)}
-        .identifiant{text-align:right;margin-top:-2.5rem}
-        .identifiant span{color:white}
-        .deco{color:white;background:none;border:none;cursor:pointer;text-decoration:underline;margin-left:.5rem}
+        .carte{background:white;border-radius:1.25rem;box-shadow:var(--ombre-legere);padding:2rem;margin-bottom:1.25rem}
+        h2{color:var(--primaire);margin-bottom:1.5rem;font-size:1.35rem}
+        .form-groupe{margin-bottom:1.3rem}
+        label{display:block;font-weight:600;margin-bottom:.6rem;color:var(--gris-700)}
+        input[type="text"],input[type="date"],input[type="password"],textarea{width:100%;padding:.9rem 1rem;border:2px solid var(--gris-200);border-radius:.9rem;font-size:1rem;transition:border-color .2s}
+        input:focus,textarea:focus{outline:none;border-color:var(--primaire);box-shadow:0 0 0 4px rgba(26,86,219,0.1)}
+        textarea{min-height:140px;resize:vertical}
+        .bouton{display:inline-flex;align-items:center;justify-content:center;gap:.5rem;padding:.9rem 1.8rem;border-radius:.9rem;font-weight:700;border:none;cursor:pointer;font-size:1rem;transition:all .3s}
+        .bouton.primaire{background:linear-gradient(135deg,var(--primaire),var(--primaire-fonce));color:white;box-shadow:0 4px 12px rgba(26,86,219,0.2)}
+        .bouton.primaire:hover{transform:translateY(-2px)}
+        .bouton.rouge{background:linear-gradient(135deg,var(--erreur),#b91c1c);color:white}
+        .bouton.rouge:hover{transform:translateY(-2px)}
+        table{width:100%;border-collapse:separate;border-spacing:0;margin-top:1rem;border-radius:.9rem;overflow:hidden}
+        th,td{padding:1rem;text-align:left;border-bottom:1px solid var(--gris-100)}
+        th{background:var(--gris-50);font-weight:700}
+        tr:last-child td{border-bottom:none}
+        tr:hover td{background:var(--gris-50)}
+        .badge{padding:.35rem .9rem;border-radius:50px;font-size:.8rem;font-weight:700}
+        .badge.rendu{background:var(--succes-clair);color:var(--succes)}
+        .badge.attente{background:var(--attention-clair);color:var(--attention)}
+        .ligne-journal{padding:1rem 0;border-bottom:1px solid var(--gris-100)}
+        .ligne-journal:hover{background:var(--gris-50)}
+        .date-journal{font-size:.85rem;color:var(--gris-600);margin-top:.3rem}
         .masque{display:none}
-        .erreur{background:#FFEBEE;border-left:4px solid var(--rouge);padding:1rem;margin:1rem 0;border-radius:0 8px 8px 0;color:var(--rouge)}
-        .succes{background:#E8F5E9;border-left:4px solid var(--vert);padding:1rem;margin:1rem 0;border-radius:0 8px 8px 0;color:var(--vert)}
-        footer{background:#222;color:#aaa;text-align:center;padding:2rem 1rem;margin-top:3rem;font-size:.9rem}
+        .message{padding:1rem 1.25rem;border-radius:.9rem;margin:1rem 0;font-weight:500}
+        .message.succes{background:var(--succes-clair);border-left:4px solid var(--succes);color:#065f46}
+        .message.erreur{background:var(--erreur-clair);border-left:4px solid var(--erreur);color:#991b1b}
+        .vide{text-align:center;padding:3rem 2rem;color:var(--gris-600)}
+        footer{text-align:center;padding:2rem 1rem;color:var(--gris-600);font-size:.9rem}
+        @keyframes fadeIn{from{opacity:0;transform:translateY(15px)}to{opacity:1;transform:translateY(0)}}
     </style>
 </head>
 <body>
-
 <header>
     <div class="header-contenu">
-        <a href="agenda.html" class="retour">← Retour à l'agenda</a>
+        <div class="fil-ariane">
+            <a href="agenda.html" class="lien-retour">← Retour à l'accueil</a>
+        </div>
         <h1>👨‍🏫 Espace Enseignant</h1>
+        <p class="sous-titre">Gérez les devoirs et suivez les rendus des élèves</p>
         <div class="identifiant" id="zoneIdentifiant"></div>
     </div>
 </header>
-
 <div class="container" id="contenuPrincipal">
-    <p>Chargement...</p>
+    <p style="text-align:center;color:var(--gris-600);padding:2rem">Chargement en cours...</p>
 </div>
-
 <footer>
-    <p>© 2026 — Cours de Philosophie. Mananjary — Madagascar</p>
-    <p>📧 rnj2618@gmail.com | 📱 +261 38 552 8349</p>
+    <p>© 2026 — Cours de Philosophie · Mananjary · Madagascar</p>
 </footer>
-
 <script>
-// --- Identifiants enseignant ---
-const ENSEIGNANT = { login:'prof', mdp:'prof123', nom:'Enseignant', prenom:'' };
+const ENSEIGNANT = { login:'prof', mdp:'prof123', nom:'Enseignant' };
+const ADMIN = { login:'admin', mdp:'451748', nom:'Administrateur' };
 const cleJournal = 'journalActivites';
-
-// --- Vérification accès ---
 const utilisateurActuel = sessionStorage.getItem('enseignantConnecte');
 const zoneIdentifiant = document.getElementById('zoneIdentifiant');
 const conteneur = document.getElementById('contenuPrincipal');
-
 if (!utilisateurActuel) {
     conteneur.innerHTML = `
-        <div class="carte" style="max-width:450px;margin:2rem auto">
-            <h2 style="text-align:center">Connexion Enseignant</h2>
+        <div class="carte" style="max-width:460px;margin:2rem auto">
+            <h2 style="text-align:center">🔐 Connexion</h2>
+            <div id="msgErreur" class="message erreur masque">Identifiant ou mot de passe incorrect</div>
             <form id="formConnexion">
                 <div class="form-groupe">
                     <label>Identifiant</label>
-                    <input type="text" id="login" required placeholder="prof">
+                    <input type="text" id="login" required placeholder="prof / admin">
                 </div>
                 <div class="form-groupe">
                     <label>Mot de passe</label>
-                    <input type="password" id="mdp" required placeholder="prof123">
+                    <input type="password" id="mdp" required placeholder="votre mot de passe">
                 </div>
-                <button type="submit" class="btn-primaire" style="width:100%">Se connecter</button>
+                <button type="submit" class="bouton primaire" style="width:100%">Se connecter</button>
             </form>
         </div>
     `;
@@ -98,35 +120,36 @@ if (!utilisateurActuel) {
         e.preventDefault();
         const l = document.getElementById('login').value.trim();
         const m = document.getElementById('mdp').value.trim();
-        if (l === ENSEIGNANT.login && m === ENSEIGNANT.mdp) {
-            sessionStorage.setItem('enseignantConnecte', 'ok');
+        if ((l === ENSEIGNANT.login && m === ENSEIGNANT.mdp) || 
+            (l === ADMIN.login && m === ADMIN.mdp)) {
+            sessionStorage.setItem('enseignantConnecte', l);
             chargerInterface();
         } else {
-            conteneur.insertAdjacentHTML('afterbegin', `<div class="erreur">Identifiant ou mot de passe incorrect</div>`);
+            document.getElementById('msgErreur').classList.remove('masque');
         }
     });
 } else {
     chargerInterface();
 }
-
 function chargerInterface() {
-    zoneIdentifiant.innerHTML = `<span>Enseignant</span><button class="deco" id="deco">Déconnexion</button>`;
+    const estAdmin = sessionStorage.getItem('enseignantConnecte') === 'admin';
+    zoneIdentifiant.innerHTML = `
+        <span>${estAdmin ? '🔧 Administrateur' : '👨‍🏫 Enseignant'}</span>
+        <button class="deco" id="deco">Déconnexion</button>
+    `;
     document.getElementById('deco').addEventListener('click', () => {
         sessionStorage.removeItem('enseignantConnecte');
         location.reload();
     });
-
     conteneur.innerHTML = `
         <div class="onglets">
             <button class="onglet actif" data-onglet="ajouter">➕ Ajouter un devoir</button>
             <button class="onglet" data-onglet="suivi">📋 Suivi des rendus</button>
             <button class="onglet" data-onglet="journal">📖 Journal des activités</button>
         </div>
-
-        <!-- Ajouter devoir -->
         <div class="contenu-onglet visible" id="ajouter">
             <div class="carte">
-                <h2>Ajouter un nouveau devoir</h2>
+                <h2>📝 Créer un nouveau devoir</h2>
                 <form id="formAjoutDevoir">
                     <div class="form-groupe">
                         <label>Titre du devoir *</label>
@@ -134,37 +157,36 @@ function chargerInterface() {
                     </div>
                     <div class="form-groupe">
                         <label>Consigne / Sujet *</label>
-                        <textarea id="consigneDevoir" required placeholder="Sujet, instructions, attentes..."></textarea>
+                        <textarea id="consigneDevoir" required placeholder="Sujet, instructions..."></textarea>
                     </div>
                     <div class="form-groupe">
                         <label>Date limite *</label>
                         <input type="date" id="dateLimiteDevoir" required>
                     </div>
-                    <button type="submit" class="btn-primaire">✅ Enregistrer le devoir</button>
-                    <div id="msgAjout" class="masque succes" style="margin-top:1rem">Devoir ajouté avec succès !</div>
+                    <button type="submit" class="bouton primaire">✅ Enregistrer</button>
+                    <div id="msgAjout" class="message succes masque" style="margin-top:1.5rem">✅ Devoir ajouté avec succès !</div>
                 </form>
             </div>
         </div>
 
-        <!-- Suivi des rendus -->
         <div class="contenu-onglet" id="suivi">
             <div class="carte">
-                <h2>Suivi des rendus</h2>
+                <h2>📊 Suivi des rendus élèves</h2>
                 <div id="tableauSuivi"></div>
             </div>
         </div>
 
-        <!-- Journal des activités -->
         <div class="contenu-onglet" id="journal">
             <div class="carte">
-                <h2>Journal des activités</h2>
-                <button id="viderJournal" class="btn-rouge" style="font-size:.85rem;padding:.5rem 1rem;margin-bottom:1rem">Vider le journal</button>
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem">
+                    <h2 style="margin:0">📖 Historique des activités</h2>
+                    ${estAdmin ? `<button id="viderJournal" class="bouton rouge" style="font-size:.85rem;padding:.6rem 1.2rem">🗑️ Vider</button>` : ''}
+                </div>
                 <div id="listeJournal"></div>
             </div>
         </div>
     `;
 
-    // --- Gestion des onglets ---
     document.querySelectorAll('.onglet').forEach(onglet => {
         onglet.addEventListener('click', () => {
             document.querySelectorAll('.onglet').forEach(o => o.classList.remove('actif'));
@@ -177,7 +199,6 @@ function chargerInterface() {
         });
     });
 
-    // --- Ajout devoir ---
     document.getElementById('formAjoutDevoir').addEventListener('submit', e => {
         e.preventDefault();
         const titre = document.getElementById('titreDevoir').value.trim();
@@ -192,35 +213,31 @@ function chargerInterface() {
         listeDevoirs.push(nouveau);
         localStorage.setItem('devoirs', JSON.stringify(listeDevoirs));
 
-        // Enregistrer dans le journal
-        ajouterJournal(`Nouveau devoir ajouté : "${titre}"`);
+        ajouterJournal(`Devoir créé : « ${titre} »`);
 
-        // Réinitialiser et confirmer
         document.getElementById('formAjoutDevoir').reset();
         const msg = document.getElementById('msgAjout');
         msg.classList.remove('masque');
         setTimeout(() => msg.classList.add('masque'), 3000);
     });
 
-    // --- Vider journal ---
-    document.getElementById('viderJournal').addEventListener('click', () => {
-        if (confirm('Effacer tout le journal ?')) {
-            localStorage.setItem(cleJournal, '[]');
-            afficherJournal();
-        }
-    });
+    if (estAdmin) {
+        document.getElementById('viderJournal')?.addEventListener('click', () => {
+            if (confirm('Effacer tout le journal ?')) {
+                localStorage.setItem(cleJournal, '[]');
+                ajouterJournal('Journal vidé par administrateur');
+                afficherJournal();
+            }
+        });
+    }
 
     afficherSuivi();
     afficherJournal();
 }
 
-// --- Fonctions utilitaires ---
 function ajouterJournal(texte) {
     const journal = JSON.parse(localStorage.getItem(cleJournal) || '[]');
-    journal.unshift({
-        date: new Date().toLocaleString('fr-FR'),
-        action: texte
-    });
+    journal.unshift({ date: new Date().toLocaleString('fr-FR'), action: texte });
     localStorage.setItem(cleJournal, JSON.stringify(journal));
 }
 
@@ -233,8 +250,9 @@ function afficherSuivi() {
             const rendus = JSON.parse(localStorage.getItem(cle) || '[]');
             const loginEleve = cle.replace('rendus_', '');
             rendus.forEach(r => {
-                tousRendus.push({ ...r, loginEleve });
-                ajouterJournal(`"${r.nomTravail}" déposé par ${loginEleve}`);
+                if (!tousRendus.some(t => t.idDevoir === r.idDevoir && t.loginEleve === loginEleve)) {
+                    tousRendus.push({ ...r, loginEleve });
+                }
             });
         }
     }
@@ -242,7 +260,7 @@ function afficherSuivi() {
     let html = '<table><thead><tr><th>Devoir</th><th>Élève</th><th>Titre du travail</th><th>Mode</th><th>Date dépôt</th><th>Statut</th></tr></thead><tbody>';
     
     if (listeDevoirs.length === 0) {
-        html += '<tr><td colspan="6" style="text-align:center;color:var(--gris)">Aucun devoir créé</td></tr>';
+        html += '<tr><td colspan="6" class="vide">Aucun devoir créé pour l\'instant</td></tr>';
     } else {
         listeDevoirs.forEach(devoir => {
             const rendusDevoir = tousRendus.filter(r => r.idDevoir === devoir.id);
@@ -250,9 +268,9 @@ function afficherSuivi() {
                 html += `
                     <tr>
                         <td><strong>${devoir.titre}</strong></td>
-                        <td colspan="3" style="color:var(--gris)">Aucun rendu</td>
+                        <td colspan="3" style="color:var(--gris-600)">Aucun rendu</td>
                         <td>-</td>
-                        <td><span class="statut-rendu en-attente">En attente</span></td>
+                        <td><span class="badge attente">En attente</span></td>
                     </tr>
                 `;
             } else {
@@ -261,37 +279,6 @@ function afficherSuivi() {
                         <tr>
                             <td>${devoir.titre}</td>
                             <td>${r.loginEleve}</td>
-                            <td>${r.nomTravail}</td>
+                            <td>${r.nomTravail || '-'}</td>
                             <td>${r.type === 'texte' ? 'Texte' : 'Fichier'}</td>
-                            <td>${r.dateRendu}</td>
-                            <td><span class="statut-rendu rendu">✅ Rendu</span></td>
-                        </tr>
-                    `;
-                });
-            }
-        });
-    }
-    html += '</tbody></table>';
-    document.getElementById('tableauSuivi').innerHTML = html;
-}
-
-function afficherJournal() {
-    const journal = JSON.parse(localStorage.getItem(cleJournal) || '[]');
-    let html = '';
-    if (journal.length === 0) {
-        html = '<p style="color:var(--gris)">Aucune activité enregistrée</p>';
-    } else {
-        journal.forEach(entree => {
-            html += `
-                <div class="ligne-journal">
-                    <p>${entree.action}</p>
-                    <p class="date-journal">${entree.date}</p>
-                </div>
-            `;
-        });
-    }
-    document.getElementById('listeJournal').innerHTML = html;
-}
-</script>
-</body>
-</html>
+                            <td>${r.date
