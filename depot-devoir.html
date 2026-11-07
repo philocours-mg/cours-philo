@@ -182,7 +182,6 @@ if (!eleve) {
             </div>
         `;
 
-        // --- Changement mode Texte / Fichier ---
         const choix = document.querySelectorAll('.choix');
         choix.forEach(bouton => {
             bouton.addEventListener('click', () => {
@@ -194,12 +193,10 @@ if (!eleve) {
             });
         });
 
-        // --- Ouvrir la boîte de sélection quand on clique sur la zone ---
         document.getElementById('zoneApercu').addEventListener('click', () => {
             document.getElementById('fichierTravail').click();
         });
 
-        // --- Afficher l'aperçu quand un fichier est choisi ---
         document.getElementById('fichierTravail').addEventListener('change', function(e) {
             const fichier = e.target.files[0];
             if (!fichier) {
@@ -208,12 +205,11 @@ if (!eleve) {
                 document.getElementById('zoneApercu').classList.remove('selectionne');
                 return;
             }
-
             document.getElementById('defaut').style.display = 'none';
             document.getElementById('selectionne').style.display = 'block';
             document.getElementById('zoneApercu').classList.add('selectionne');
             document.getElementById('nomFichierAffiche').textContent = fichier.name;
-
+            
             const ext = fichier.name.split('.').pop().toLowerCase();
             const icone = document.getElementById('iconeFichier');
             if (['jpg','jpeg','png'].includes(ext)) {
@@ -237,7 +233,12 @@ if (!eleve) {
             }
         });
 
-        // --- Soumission du formulaire ---
+        function afficherSucces() {
+            document.getElementById('formDepot').style.display = 'none';
+            document.getElementById('afficherNom').textContent = document.getElementById('nomTravail').value;
+            document.getElementById('blocSucces').classList.add('visible');
+        }
+
         document.getElementById('formDepot').addEventListener('submit', function(e) {
             e.preventDefault();
             const mode = document.querySelector('.choix.actif').dataset.mode;
@@ -255,6 +256,4 @@ if (!eleve) {
                 afficherSucces();
             } else {
                 const fichier = document.getElementById('fichierTravail').files[0];
-                if (!fichier) { alert("Veuillez choisir un fichier."); return; }
-                const lecteur = new FileReader();
-                lecteur.onload
+                if (!fich
