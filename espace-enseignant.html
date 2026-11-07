@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Espace Enseignant — Cours de Philosophie</title>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',sans-serif}
+        :root{--bleu-fonce:#0D47A1;--bleu:#1565C0;--vert:#2E7D32;--orange:#E65100;--rouge:#D32F2F;--gris:#666;--fond:#FAFAFA;--texte:#333;--bordure:#E0E0E0}
+        body{background:var(--fond);color:var(--texte);line-height:1.6}
+        header{background:linear-gradient(135deg,#0D47A1,#1565C0);color:white;padding:1.5rem 1rem}
+        .header-contenu{max-width:800px;margin:0 auto}
+        .retour{color:white;text-decoration:none;opacity:.9;display:inline-block;margin-bottom:.5rem}
+        .retour:hover{text-decoration:underline}
+        .container{max-width:800px;margin:0 auto;padding:2rem 1rem}
+        .onglets{display:flex;gap:.5rem;margin-bottom:1.5rem;flex-wrap:wrap}
+        .onglet{padding:.8rem 1.2rem;background:#eee;border:none;border-radius:8px;cursor:pointer;font-weight:600;transition:.2s}
+        .onglet.actif{background:var(--bleu);color:white}
+        .contenu-onglet{display:none}
+        .contenu-onglet.visible{display:block}
+        .carte{background:white;border-radius:12px;box-shadow:0 3px 10px rgba(0,0,0,.08);padding:1.5rem;margin-bottom:1.2rem}
+        h2{color:var(--bleu);margin-bottom:1.2rem}
+        h3{color:var(--texte);margin-bottom:.8rem}
+        .form-groupe{margin-bottom:1.2rem}
+        label{display:block;font-weight:600;margin-bottom:.5rem}
+        input[type="text"],input[type="date"],textarea{width:100%;padding:.85rem;border:1px solid var(--bordure);border-radius:8px;font-size:1rem}
+        textarea{min-height:120px;resize:vertical}
+        button{padding:.85rem 1.5rem;border:none;border-radius:8px;font-weight:bold;cursor:pointer;font-size:1rem;transition:.2s}
+        .btn-primaire{background:var(--bleu);color:white}
+        .btn-primaire:hover{background:var(--bleu-fonce)}
+        .btn-vert{background:var(--vert);color:white}
+        .btn-rouge{background:var(--rouge);color:white}
+        table{width:100%;border-collapse:collapse;margin-top:1rem}
+        th,td{padding:.8rem;text-align:left;border-bottom:1px solid var(--bordure)}
+        th{background:#f5f5f5;font-weight:bold}
+        .statut-rendu{padding:.25rem .6rem;border-radius:20px;font-size:.85rem;font-weight:bold}
+        .rendu{background:#E8F5E9;color:var(--vert)}
+        .en-attente{background:#FFF3E0;color:var(--orange)}
+        .en-retard{background:#FFEBEE;color:var(--rouge)}
+        .ligne-journal{padding:.8rem 0;border-bottom:1px solid var(--bordure)}
+        .date-journal{font-size:.85rem;color:var(--gris)}
+        .identifiant{text-align:right;margin-top:-2.5rem}
+        .identifiant span{color:white}
+        .deco{color:white;background:none;border:none;cursor:pointer;text-decoration:underline;margin-left:.5rem}
+        .masque{display:none}
+        .erreur{background:#FFEBEE;border-left:4px solid var(--rouge);padding:1rem;margin:1rem 0;border-radius:0 8px 8px 0;color:var(--rouge)}
+        .succes{background:#E8F5E9;border-left:4px solid var(--vert);padding:1rem;margin:1rem 0;border-radius:0 8px 8px 0;color:var(--vert)}
+        footer{background:#222;color:#aaa;text-align:center;padding:2rem 1rem;margin-top:3rem;font-size:.9rem}
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="header-contenu">
+        <a href="agenda.html" class="retour">← Retour à l'agenda</a>
+        <h1>👨‍🏫 Espace Enseignant</h1>
+        <div class="identifiant" id="zoneIdentifiant"></div>
+    </div>
+</header>
+
+<div class="container" id="contenuPrincipal">
+    <p>Chargement...</p>
+</div>
+
+<footer>
+    <p>© 2026 — Cours de Philosophie. Mananjary — Madagascar</p>
+    <p>📧 rnj2618@gmail.com | 📱 +261 38 552 8349</p>
+</footer>
+
+<script>
+// --- Identifiants enseignant ---
+const ENSEIGNANT = { login:'prof', mdp:'prof123', nom:'Enseignant', prenom:'' };
+const cleJournal = 'journalActivites';
+
+// --- Vérification accès ---
+const utilisateurActuel = sessionStorage.getItem('enseignantConnecte');
+const zoneIdentifiant = document.getElementById('zoneIdentifiant');
+const conteneur = document.getElementById('contenuPrincipal');
+
+if (!utilisateurActuel) {
+    conteneur.innerHTML = `
+        <div class="carte" style="max-width:450px;margin:2rem auto">
+            <h2 style="text-align:center">Connexion Enseignant</h2>
+            <form id="formConnexion">
+                <div class="form-groupe">
+                    <label>Identifiant</label>
+                    <input type="text" id="login" required placeholder="prof">
+                </div>
+                <div class="form-groupe">
+                    <label>Mot de passe</label>
+                    <input type="password" id="mdp" required placeholder="prof123">
+                </div>
+                <button type="submit" class="btn-primaire" style="width:100%">Se connecter</button>
+            </form>
+        </div>
+    `;
+    document.getElementById('formConnexion').addEventListener('submit', e => {
+        e.preventDefault();
+        const l = document.getElementById('login').value.trim();
+        const m = document.getElementById('mdp').value.trim();
+        if (l === ENSEIGNANT.login && m === ENSEIGNANT.mdp) {
+            sessionStorage.setItem('enseignantConnecte', 'ok');
+            chargerInterface();
+        } else {
+            conteneur.insertAdjacentHTML('afterbegin', `<div class="erreur">Identifiant ou mot de passe incorrect</div>`);
+        }
+    });
+} else {
+    chargerInterface();
+}
+
+function chargerInterface() {
+    zoneIdentifiant.innerHTML = `<span>Enseignant</span><button class="deco" id="deco">Déconnexion</button>`;
+    document.getElementById('deco').addEventListener('click', () => {
+        sessionStorage.removeItem('enseignantConnecte');
+        location.reload();
+    });
+
+    conteneur.innerHTML = `
+        <div class="onglets">
+            <button class="onglet actif" data-onglet="ajouter">➕ Ajouter un devoir</button>
+            <button class="onglet" data-onglet="suivi">📋 Suivi des rendus</button>
+            <button class="onglet" data-onglet="journal">📖 Journal des activités</button>
+        </div>
+
+        <!-- Ajouter devoir -->
+        <div class="contenu-onglet visible" id="ajouter">
+            <div class="carte">
+                <h2>Ajouter un nouveau devoir</h2>
+                <form id="formAjoutDevoir">
+                    <div class="form-groupe">
+                        <label>Titre du devoir *</label>
+                        <input type="text" id="titreDevoir" required placeholder="Ex: La Liberté — Dissertation">
+                    </div>
+                    <div class="form-groupe">
+                        <label>Consigne / Sujet *</label>
+                        <textarea id="consigneDevoir" required placeholder="Sujet, instructions, attentes..."></textarea>
+                    </div>
+                    <div class="form-groupe">
+                        <label>Date limite *</label>
+                        <input type="date" id="dateLimiteDevoir" required>
+                    </div>
+                    <button type="submit" class="btn-primaire">✅ Enregistrer le devoir</button>
+                    <div id="msgAjout" class="masque succes" style="margin-top:1rem">Devoir ajouté avec succès !</div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Suivi des rendus -->
+        <div class="contenu-onglet" id="suivi">
+            <div class="carte">
+                <h2>Suivi des rendus</h2>
+                <div id="tableauSuivi"></div>
+            </div>
+        </div>
+
+        <!-- Journal des activités -->
+        <div class="contenu-onglet" id="journal">
+            <div class="carte">
+                <h2>Journal des activités</h2>
+                <button id="viderJournal" class="btn-rouge" style="font-size:.85rem;padding:.5rem 1rem;margin-bottom:1rem">Vider le journal</button>
+                <div id="listeJournal"></div>
+            </div>
+        </div>
+    `;
+
+    // --- Gestion des onglets ---
+    document.querySelectorAll('.onglet').forEach(onglet => {
+        onglet.addEventListener('click', () => {
+            document.querySelectorAll('.onglet').forEach(o => o.classList.remove('actif'));
+            onglet.classList.add('actif');
+            const id = onglet.dataset.onglet;
+            document.querySelectorAll('.contenu-onglet').forEach(c => c.classList.remove('visible'));
+            document.getElementById(id).classList.add('visible');
+            if (id === 'suivi') afficherSuivi();
+            if (id === 'journal') afficherJournal();
+        });
+    });
+
+    // --- Ajout devoir ---
+    document.getElementById('formAjoutDevoir').addEventListener('submit', e => {
+        e.preventDefault();
+        const titre = document.getElementById('titreDevoir').value.trim();
+        const consigne = document.getElementById('consigneDevoir').value.trim();
+        const dateLimite = document.getElementById('dateLimiteDevoir').value;
+
+        const listeDevoirs = JSON.parse(localStorage.getItem('devoirs') || '[]');
+        const nouveau = {
+            id: listeDevoirs.length ? Math.max(...listeDevoirs.map(d => d.id)) + 1 : 1,
+            titre, consigne, dateLimite
+        };
+        listeDevoirs.push(nouveau);
+        localStorage.setItem('devoirs', JSON.stringify(listeDevoirs));
+
+        // Enregistrer dans le journal
+        ajouterJournal(`Nouveau devoir ajouté : "${titre}"`);
+
+        // Réinitialiser et confirmer
+        document.getElementById('formAjoutDevoir').reset();
+        const msg = document.getElementById('msgAjout');
+        msg.classList.remove('masque');
+        setTimeout(() => msg.classList.add('masque'), 3000);
+    });
+
+    // --- Vider journal ---
+    document.getElementById('viderJournal').addEventListener('click', () => {
+        if (confirm('Effacer tout le journal ?')) {
+            localStorage.setItem(cleJournal, '[]');
+            afficherJournal();
+        }
+    });
+
+    afficherSuivi();
+    afficherJournal();
+}
+
+// --- Fonctions utilitaires ---
+function ajouterJournal(texte) {
+    const journal = JSON.parse(localStorage.getItem(cleJournal) || '[]');
+    journal.unshift({
+        date: new Date().toLocaleString('fr-FR'),
+        action: texte
+    });
+    localStorage.setItem(cleJournal, JSON.stringify(journal));
+}
+
+function afficherSuivi() {
+    const listeDevoirs = JSON.parse(localStorage.getItem('devoirs') || '[]');
+    const tousRendus = [];
+    for (let i = 0; i < localStorage.length; i++) {
+        const cle = localStorage.key(i);
+        if (cle.startsWith('rendus_')) {
+            const rendus = JSON.parse(localStorage.getItem(cle) || '[]');
+            const loginEleve = cle.replace('rendus_', '');
+            rendus.forEach(r => {
+                tousRendus.push({ ...r, loginEleve });
+                ajouterJournal(`"${r.nomTravail}" déposé par ${loginEleve}`);
+            });
+        }
+    }
+
+    let html = '<table><thead><tr><th>Devoir</th><th>Élève</th><th>Titre du travail</th><th>Mode</th><th>Date dépôt</th><th>Statut</th></tr></thead><tbody>';
+    
+    if (listeDevoirs.length === 0) {
+        html += '<tr><td colspan="6" style="text-align:center;color:var(--gris)">Aucun devoir créé</td></tr>';
+    } else {
+        listeDevoirs.forEach(devoir => {
+            const rendusDevoir = tousRendus.filter(r => r.idDevoir === devoir.id);
+            if (rendusDevoir.length === 0) {
+                html += `
+                    <tr>
+                        <td><strong>${devoir.titre}</strong></td>
+                        <td colspan="3" style="color:var(--gris)">Aucun rendu</td>
+                        <td>-</td>
+                        <td><span class="statut-rendu en-attente">En attente</span></td>
+                    </tr>
+                `;
+            } else {
+                rendusDevoir.forEach(r => {
+                    html += `
+                        <tr>
+                            <td>${devoir.titre}</td>
+                            <td>${r.loginEleve}</td>
+                            <td>${r.nomTravail}</td>
+                            <td>${r.type === 'texte' ? 'Texte' : 'Fichier'}</td>
+                            <td>${r.dateRendu}</td>
+                            <td><span class="statut-rendu rendu">✅ Rendu</span></td>
+                        </tr>
+                    `;
+                });
+            }
+        });
+    }
+    html += '</tbody></table>';
+    document.getElementById('tableauSuivi').innerHTML = html;
+}
+
+function afficherJournal() {
+    const journal = JSON.parse(localStorage.getItem(cleJournal) || '[]');
+    let html = '';
+    if (journal.length === 0) {
+        html = '<p style="color:var(--gris)">Aucune activité enregistrée</p>';
+    } else {
+        journal.forEach(entree => {
+            html += `
+                <div class="ligne-journal">
+                    <p>${entree.action}</p>
+                    <p class="date-journal">${entree.date}</p>
+                </div>
+            `;
+        });
+    }
+    document.getElementById('listeJournal').innerHTML = html;
+}
+</script>
+</body>
+</html>
